@@ -233,6 +233,7 @@ response:
         "price": INT,
         "createdAt": time.Time,
         "updatedAt": time.Time
+    }
 }
 ```
 
@@ -355,6 +356,120 @@ response:
             "price": INT,
             "createdAt": time.Time,
             "updatedAt": time.Time
+        }
+    ]
+}
+```
+
+#### POST CreateTrans
+
+request:
+```go
+{
+    "roomID":"string",
+    "seekerID":"string",
+    "startDate": time.Time,
+    "endDate": time.Time,
+    "total": int,
+    "payLater": bool,
+    "dueDate": time.Time
+}
+```
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data":{
+        "id":"string",
+        "roomID": "string",
+        "seekerID": "string",
+        "startDate": time.Time,
+        "endDate": time.Time,
+        "total": int,
+        "payLater": bool,
+        "dueDate": time.Time
+    }
+}
+```
+
+#### GET GetTransByID
+
+path variable: `:id`
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data":{
+        "id":"string",
+        "room": {
+            "id":"string",
+            "name": "string",
+            "type": "string",
+            "desc": "string",
+            "avail": "string",
+            "price": INT,
+            "createdAt": time.Time,
+            "updatedAt": time.Time
+        },
+        "seeker": {
+            "id": "string",
+            "fullName": "string",
+            "username": "string",
+            "password": "string",
+            "email": "string",
+            "phoneNumber": "string",
+            "createdAt": time.Time,
+            "updatedAt": time.Time
+        },
+        "startDate": time.Time,
+        "endDate": time.Time,
+        "total": int,
+        "payLater": bool,
+        "dueDate": time.Time
+    }
+}
+```
+
+#### GET GetPaylaterList
+
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data":[
+            {
+            "id":"string",
+            "room": {
+                "id":"string",
+                "name": "string",
+                "type": "string",
+                "desc": "string",
+                "avail": "string",
+                "price": INT,
+                "createdAt": time.Time,
+                "updatedAt": time.Time
+            },
+            "seeker": {
+                "id": "string",
+                "fullName": "string",
+                "username": "string",
+                "password": "string",
+                "email": "string",
+                "phoneNumber": "string",
+                "createdAt": time.Time,
+                "updatedAt": time.Time
+            },
+            "startDate": time.Time,
+            "endDate": time.Time,
+            "total": int,
+            "payLater": bool,
+            "dueDate": time.Time
         }
     ]
 }
