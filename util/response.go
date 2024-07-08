@@ -1,6 +1,8 @@
 package util
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 type singleRes struct {
 	Code    int    `json:"code"`
@@ -13,7 +15,7 @@ type errRes struct {
 	Message string `json:"message"`
 }
 
-func SendSingleRes(c *gin.Context, code int, message string, data any){
+func SendSingleResponse(c *gin.Context, message string, data any, code int){
   c.JSON(code, singleRes{
   	Code:    code,
   	Message: message,
