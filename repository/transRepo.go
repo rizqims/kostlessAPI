@@ -36,7 +36,8 @@ func (t *transRepo) CreateTrans(payload model.Trans) (model.Trans, error){
 		&payload.UpdatedAt,
 	)
 	if err != nil {
-		return model.Trans{}, trans.Rollback()
+		trans.Rollback()
+		return model.Trans{}, err
 	}
 
 	err = trans.Commit()
