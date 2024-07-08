@@ -2,6 +2,7 @@ package controller
 
 import (
 	"kostless-api/model"
+	"kostless-api/model/dto"
 	"kostless-api/service"
 	"kostless-api/util"
 	"net/http"
@@ -31,10 +32,26 @@ func (u *UserContr) regisHandler(ctx *gin.Context) {
 	util.SendSingleResponse(ctx, "Succesfully Created data", data, http.StatusOK)
 }
 
+//login handler
+func (u *UserContr) login(ctx *gin.Context) {
+	var payload dto.LoginDto
+	if err := ctx.ShouldBindBodyWithJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"failed to parsing": err.Error()})
+		return
+	}
+	resp , errors := u.ser.Login(payload)
+	if errors != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"failed to parsing": errors.Error()})
+		return
+	}
+	util.SendSingleResponse(ctx, "Success Login", resp, http.StatusOK)
+}
+
 // router
 func (u *UserContr) Route() {
 	router := u.rg.Group("/users")
 	router.POST("/register", u.regisHandler)
+	router.POST("/login", u.login)
 }
 
 func NewUserContr(uS service.UserServ, rg *gin.RouterGroup) *UserContr{
