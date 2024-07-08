@@ -1,18 +1,40 @@
-CREATE DATABASE api_kostless;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE users(
+CREATE TABLE IF NOT EXISTS users(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     fullname VARCHAR(50),
     username VARCHAR(50),
     password VARCHAR(100),
     email VARCHAR(50),
     phone_number VARCHAR(16),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
 );
 
-CREATE TABLE seekers(
+CREATE TABLE IF NOT EXISTS kos(
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(50),
+    address TEXT,
+    room_count INT,
+    coordinate TEXT,
+    description TEXT,
+    rules TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS rooms(
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(50),
+    type VARCHAR(50),
+    description TEXT,
+    avail VARCHAR(15),
+    price INT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS seekers(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(50),
     password VARCHAR(100),
@@ -22,36 +44,12 @@ CREATE TABLE seekers(
     attitude_points INT,
     status VARCHAR(50),
     room_id UUID,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP,
     updated_at TIMESTAMP,
     FOREIGN KEY (room_id) REFERENCES rooms(id)
 );
 
-CREATE TABLE kos(
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(50),
-    address TEXT,
-    room_count INT,
-    coordinate TEXT,
-    desc TEXT,
-    rules TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    FOREIGN KEY (owner_id) REFERENCES users(id)
-);
-
-CREATE TABLE rooms(
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(50),
-    type VARCHAR(50),
-    desc TEXT,
-    avail ENUM('open', 'occupied') DEFAULT 'open',
-    price INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP
-);
-
-CREATE TABLE bookings(
+CREATE TABLE IF NOT EXISTS bookings(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     room_id UUID,
     seeker_id UUID,
@@ -61,17 +59,17 @@ CREATE TABLE bookings(
     total INT,
     pay_later BOOLEAN DEFAULT FALSE,
     due_date DATE,
-    payment_status ENUM('pending', 'paid', 'overdue') DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    payment_status VARCHAR(15),
+    created_at TIMESTAMP,
     updated_at TIMESTAMP,
     FOREIGN KEY (room_id) REFERENCES rooms(id),
     FOREIGN KEY (seeker_id) REFERENCES seekers(id)
 );
 
-CREATE TABLE vouchers(
+CREATE TABLE IF NOT EXISTS vouchers(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(50),
     percent_amount INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
