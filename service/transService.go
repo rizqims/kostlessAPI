@@ -18,34 +18,41 @@ type transService struct {
 
 func (t *transService) CreateTrans(payload req.TransCreateReq) (model.Trans, error){
 	var trans model.Trans
-	trans.EndDate = payload.StartDate.AddDate(0, payload.Months, 0)
+	startDate, err := time.Parse(`2006-01-02`, payload.StartDate)
+	if err != nil {
+		return model.Trans{}, err
+	}
+	trans.EndDate = startDate.AddDate(0, payload.Months, 0)
 	// TODO implement total logic
 	// total := repository.getRoomPrice
 
 	// validate date
-	if trans.EndDate.Before(payload.StartDate){
+	if trans.EndDate.Before(startDate){
 		return model.Trans{}, errors.New("endDate should not before StartDate")
 	}
 
 	// validate paylater
 	if payload.PayLater{
 		trans.PaymentStatus = "pending"
-	} else{
-		trans.PaymentStatus = "paid"
-		newDueDate, err := time.Parse(`2006-01-02`, `2024-01-01`)
+		trueDueDate, err:= time.Parse(`2006-01-02`, payload.DueDate)
 		if err != nil {
 			return model.Trans{}, err
 		}
-		trans.DueDate = newDueDate
+		trans.DueDate = trueDueDate
+	} else{
+		trans.PaymentStatus = "paid"
+		falseDueDate, err := time.Parse(`2006-01-02`, `2024-01-01`)
+		if err != nil {
+			return model.Trans{}, err
+		}
+		trans.DueDate = falseDueDate
 	}
-
 
 	trans.RoomID = payload.RoomID
 	trans.SeekerID = payload.SeekerID
-	trans.StartDate = payload.StartDate
-	trans.Total = 10000
+	trans.StartDate = startDate
+	trans.Total = 10000 // hardcoded bcs no room yet
 	trans.PayLater = payload.PayLater
-	trans.DueDate = payload.DueDate
 
 	transReq, err := t.repo.CreateTrans(trans)
 	if err != nil {

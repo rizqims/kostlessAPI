@@ -4,6 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"kostless/config"
+	"kostless/controller"
+	"kostless/repository"
+	"kostless/service"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -11,12 +14,14 @@ import (
 )
 
 type Server struct {
+	tS service.TransService
 	engine *gin.Engine
 	PortApp string
 }
 
 func (s *Server) InitiateRoute(){
 	routerGroup := s.engine.Group("/api/v1")
+	controller.NewTransController(routerGroup, s.tS).Route()
 }
 
 func (s *Server) Start(){
@@ -34,8 +39,13 @@ func NewServer() *Server{
 		log.Fatal(err)
 	}
 
+	transRepo := repository.NewTransRepo(db)
+
+	transService := service.NewTransService(transRepo)
+
 
 	return &Server{
+		tS: transService,
 		engine:  gin.Default(),
 		PortApp: cn.Server.Port,
 	}
