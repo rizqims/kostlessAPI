@@ -7,7 +7,6 @@ template response:
 }
 ```
 
-
 ### Owner
 
 #### POST RegisterOwner
@@ -58,6 +57,61 @@ response:
     "message": "string",
     "data": {
         "token":"string"
+    }
+}
+```
+
+#### PUT UpdateProfile
+
+path variable: `:id`
+
+request:
+```go
+{
+    "fullName": "string",
+    "username": "string",
+    "password": "string",
+    "email": "string",
+    "phoneNumber": "string"
+}
+```
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": {
+        "id": "string",
+        "fullName": "string",
+        "username": "string",
+        "password": "string",
+        "email": "string",
+        "phoneNumber": "string",
+        "createdAt": time.Time,
+        "updatedAt": time.Time
+    }
+}
+```
+
+#### GET GetOwner
+
+path variable: `:id`
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": {
+        "id": "string",
+        "fullName": "string",
+        "username": "string",
+        "password": "string",
+        "email": "string",
+        "phoneNumber": "string",
+        "createdAt": time.Time,
+        "updatedAt": time.Time
     }
 }
 ```
@@ -167,6 +221,60 @@ request:
 
 response:
 ```go
+{
+    "code": int,
+    "message": "string",
+    "data": {
+        "id":"string",
+        "name": "string",
+        "type": "string",
+        "desc": "string",
+        "avail": "string",
+        "price": INT,
+        "createdAt": time.Time,
+        "updatedAt": time.Time
+}
+```
+
+#### GET GetAll
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": [
+        {
+            "id":"string",
+            "name": "string",
+            "type": "string",
+            "desc": "string",
+            "avail": "string",
+            "price": INT,
+            "createdAt": time.Time,
+            "updatedAt": time.Time
+        },
+        {
+            "id":"string",
+            "name": "string",
+            "type": "string",
+            "desc": "string",
+            "avail": "string",
+            "price": INT,
+            "createdAt": time.Time,
+            "updatedAt": time.Time
+        }
+    ]
+}
+```
+
+#### GET GetRoomByID
+
+path variable: `:id`
+
+response:
+```go
+{
     "code": int,
     "message": "string",
     "data": {
@@ -179,4 +287,75 @@ response:
         "createdAt": time.Time,
         "updatedAt": time.Time
     }
+}
+```
+
+#### GET GetByAvail
+
+path variable: `:avail`
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": [
+        {
+            "id":"string",
+            "name": "string",
+            "type": "string",
+            "desc": "string",
+            "avail": "string",
+            "price": INT,
+            "createdAt": time.Time,
+            "updatedAt": time.Time
+        },
+        {
+            "id":"string",
+            "name": "string",
+            "type": "string",
+            "desc": "string",
+            "avail": "string",
+            "price": INT,
+            "createdAt": time.Time,
+            "updatedAt": time.Time
+        }
+    ]
+}
+```
+
+#### GET GetRoomByBudget
+
+query param: `?budget=500000`
+
+desc: example, if seeker input 500000, display room that has the price of idr 50000 or lower
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": [
+        {
+            "id":"string",
+            "name": "string",
+            "type": "string",
+            "desc": "string",
+            "avail": "string",
+            "price": INT,
+            "createdAt": time.Time,
+            "updatedAt": time.Time
+        },
+        {
+            "id":"string",
+            "name": "string",
+            "type": "string",
+            "desc": "string",
+            "avail": "string",
+            "price": INT,
+            "createdAt": time.Time,
+            "updatedAt": time.Time
+        }
+    ]
+}
 ```
