@@ -2,12 +2,10 @@ package model
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Kos struct {
-	ID          uuid.UUID `json:"id"`
+	ID          string    `json:"id"`
 	Name        string    `json:"name"`
 	Address     string    `json:"address"`
 	RoomCount   int       `json:"room_count"`
