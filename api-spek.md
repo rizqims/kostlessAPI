@@ -171,6 +171,136 @@ response:
 }
 ```
 
+#### PUT UpdateProfile
+
+path variable: `:id`
+
+request:
+```go
+{
+    "fullName": "string",
+    "username": "string",
+    "password": "string",
+    "email": "string",
+    "phoneNumber": "string",
+    "status":"string",
+}
+```
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": {
+        "id": "string",
+        "fullName": "string",
+        "username": "string",
+        "password": "string",
+        "email": "string",
+        "phoneNumber": "string",
+        "status":"string",
+        "createdAt": time.Time,
+        "updatedAt": time.Time
+    }
+}
+```
+
+#### DELETE DeleteSeeker
+
+path variable: `:id`
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": 0
+}
+```
+
+#### GET GetSeekerByID
+
+path variable: `:id`
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": {
+        "id": "string",
+        "fullName": "string",
+        "username": "string",
+        "password": "string",
+        "email": "string",
+        "phoneNumber": "string",
+        "status":"string",
+        "createdAt": time.Time,
+        "updatedAt": time.Time
+    }
+}
+```
+
+#### GET GetAllSeeker
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": [
+        {
+        "id": "string",
+        "fullName": "string",
+        "username": "string",
+        "password": "string",
+        "email": "string",
+        "phoneNumber": "string",
+        "status":"string",
+        "attitudePoints": int,
+        "roomID":"string",
+        "createdAt": time.Time,
+        "updatedAt": time.Time
+    },
+    {
+        "id": "string",
+        "fullName": "string",
+        "username": "string",
+        "password": "string",
+        "email": "string",
+        "phoneNumber": "string",
+        "status":"string",
+        "attitudePoints": int,
+        "roomID":"string",
+        "createdAt": time.Time,
+        "updatedAt": time.Time
+    }
+    ]
+}
+```
+
+#### POST UpdateAp
+
+request:
+```go
+{
+    "id":"string",
+    "attitudePoints": int,
+}
+```
+
+if ap is lower than 5, send an email or something to notify seekers. if it has more than 10 points, notify the owners instead to add vouchers to seekers
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": 0
+}
+```
+
 ### Kost
 
 #### POST CreateKost
@@ -189,6 +319,7 @@ request:
 
 response:
 ```go
+{
     "code": int,
     "message": "string",
     "data": {
@@ -202,6 +333,98 @@ response:
         "createdAt": time.Time,
         "updatedAt": time.Time
     }
+}
+```
+
+#### PUT UpdateKost
+
+path variable: `:id`
+
+request:
+```go
+{
+    "name": "string",
+    "address": "string",
+    "roomCount": int,
+    "coordinate": "string",
+    "desc": "string",
+    "rules": "string"
+}
+```
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": {
+        "id": "string",
+        "name": "string",
+        "address": "string",
+        "roomCount": int,
+        "coordinate": "string",
+        "desc": "string",
+        "rules": "string",
+        "createdAt": time.Time,
+        "updatedAt": time.Time
+    }
+}
+```
+
+#### DELETE DeleteKostByID
+
+path variable: `:id`
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": 0
+}
+```
+
+#### GET GetDetailedKost
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": {
+        "id": "string",
+        "name": "string",
+        "address": "string",
+        "roomCount": int,
+        "rooms":[
+            {
+            "id":"string",
+            "name": "string",
+            "type": "string",
+            "desc": "string",
+            "avail": "string",
+            "price": INT,
+            "createdAt": time.Time,
+            "updatedAt": time.Time
+            },
+            {
+            "id":"string",
+            "name": "string",
+            "type": "string",
+            "desc": "string",
+            "avail": "string",
+            "price": INT,
+            "createdAt": time.Time,
+            "updatedAt": time.Time
+            }
+        ]
+        "coordinate": "string",
+        "desc": "string",
+        "rules": "string",
+        "createdAt": time.Time,
+        "updatedAt": time.Time
+    }
+}
 ```
 
 ### Room
@@ -360,6 +583,54 @@ response:
     ]
 }
 ```
+
+#### PUT UpdateRoom
+
+path variable: `:id`
+
+request:
+```go
+{
+    "name": "string",
+    "type": "string",
+    "desc": "string",
+    "avail": "string",
+    "price": INT,
+}
+```
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": {
+        "id":"string",
+        "name": "string",
+        "type": "string",
+        "desc": "string",
+        "avail": "string",
+        "price": INT,
+        "createdAt": time.Time,
+        "updatedAt": time.Time
+    }
+}
+```
+
+#### DELETE DeleteRoom
+
+path variable: `:id`
+
+response:
+```go
+{
+    "code": int,
+    "message": "string",
+    "data": 0
+}
+```
+
+### Trans
 
 #### POST CreateTrans
 

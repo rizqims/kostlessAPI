@@ -27,15 +27,15 @@ func (k *KosController) createKos(ctx *gin.Context) {
 	var request dto.KosRequest
 	err := ctx.ShouldBindJSON(&request)
 	if err != nil {
-		util.SendErrRes(ctx, http.StatusBadRequest, err.Error())
+		util.SendErrResponse(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	kos, err := k.service.CreateKos(request)
 	if err != nil {
-		util.SendErrRes(ctx, http.StatusInternalServerError, err.Error())
+		util.SendErrResponse(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	util.SendSingleRes(ctx, http.StatusCreated, "Success", kos)
+	util.SendSingleResponse(ctx, http.StatusCreated, "Success", kos)
 }

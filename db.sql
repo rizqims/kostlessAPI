@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users(
     password VARCHAR(100),
     email VARCHAR(50),
     phone_number VARCHAR(16),
-    created_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP
 );
 
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS kos(
     coordinate TEXT,
     description TEXT,
     rules TEXT,
-    created_at TIMESTAMP,
+    created_at TIMESTAMP ,
     updated_at TIMESTAMP
 );
 
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS seekers(
     attitude_points INT,
     status VARCHAR(50),
     room_id UUID,
-    created_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     FOREIGN KEY (room_id) REFERENCES rooms(id)
 );
