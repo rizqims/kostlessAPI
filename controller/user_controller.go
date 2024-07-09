@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"kostless-api/model"
 	"kostless-api/model/dto"
 	"kostless-api/service"
@@ -26,6 +27,7 @@ func (u *UserContr) regisHandler(ctx *gin.Context) {
 
 	data, err := u.ser.CreatedNewUser(owner)
 	if err != nil {
+		fmt.Print("err ====", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

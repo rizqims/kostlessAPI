@@ -8,10 +8,10 @@ type Seekers struct {
 	Password     string    `json:"password"`
 	Fullname     string    `json:"fullname"`
 	Email        string    `json:"email"`
-	PhoneNumber  string    `json:"phone_number"`
-	AtitudePoits int       `json:"atitude_points"`
+	PhoneNumber  string    `json:"phoneNumber"`
+	AtitudePoits int       `json:"atitudePoints"`
 	Status       string    `json:"status"`
-	RoomId       string    `json:"room_id"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	RoomId       string    `json:"roomId"`
+	CreatedAt    time.Time `json:"createdAt"`
+	UpdatedAt    time.Time `json:"updatedAt"`
 }

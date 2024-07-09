@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// struct
+// struct.
 type SeekerContr struct {
 	ser service.SeekerServ
 	rg  *gin.RouterGroup

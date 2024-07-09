@@ -17,6 +17,7 @@ type UserServ interface {
 // struct
 type userServ struct {
 	repo repository.UserRepo
+	jwt util.JwtToken
 }
 
 // Login implements UserServ.
@@ -29,9 +30,9 @@ func (u *userServ) Login(payload dto.LoginDto) (dto.LoginResponse, error) {
 	if err != nil {
 		return dto.LoginResponse{}, fmt.Errorf("password incorrect")
 	}
-	user.Password = ""
-	token, err := util.GenerateToken(user.Username)
+	token, err := u.jwt.GenerateToken(user.Username)
 	if err != nil {
+		fmt.Print("errr ===",err)
 		return dto.LoginResponse{}, fmt.Errorf("password incorrect")
 	}
 	return token, nil
@@ -48,6 +49,6 @@ func (u *userServ) CreatedNewUser(payload model.User) (model.User, error) {
 }
 
 // constractor
-func NewUserServ(reposi repository.UserRepo) UserServ {
-	return &userServ{repo: reposi}
+func NewUserServ(reposi repository.UserRepo, jwt util.JwtToken) UserServ {
+	return &userServ{repo: reposi, jwt: jwt}
 }

@@ -8,7 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AuthoMiddleware() gin.HandlerFunc {
+type AuthMiddleware interface {
+	CheckToken() gin.HandlerFunc
+}
+
+type authMiddleware struct {
+	jwt util.JwtToken
+}
+
+func (a *authMiddleware) CheckToken() gin.HandlerFunc {
 	return func (ctx *gin.Context)  {
 		authHeader := ctx.GetHeader("Authorization")
 		if authHeader == "" {
@@ -16,12 +24,16 @@ func AuthoMiddleware() gin.HandlerFunc {
 			return
 		}
 		tokenString := strings.Split(authHeader, "Bearer ")[1]
-		claims, err := util.ValidateToken(tokenString)
+		claims, err := a.jwt.ValidateToken(tokenString)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 			return
 		}
-		ctx.Set("username", claims.Username)
+		ctx.Set("username", claims["username"])
 		ctx.Next()
 	}
+}
+
+func NewAuthMiddleware(jwtAuth util.JwtToken) AuthMiddleware {
+	return &authMiddleware{jwt: jwtAuth}
 }

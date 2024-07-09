@@ -17,12 +17,14 @@ type SeekerServ interface {
 // struct
 type seekerServ struct {
 	repo repository.SeekerRepo
+	jwt util.JwtToken
 }
 
 // Login implements SeekerServ.
 func (s *seekerServ) Login(payload dto.LoginDto) (dto.LoginResponse, error) {
 	seeker, err := s.repo.GetBySeeker(payload.Username)
 	if err != nil {
+		fmt.Print("err===",err)
 		return dto.LoginResponse{}, fmt.Errorf("username invalid")
 	}
 	err = util.CheckPasswordHash(seeker.Password, payload.Password)
@@ -30,7 +32,7 @@ func (s *seekerServ) Login(payload dto.LoginDto) (dto.LoginResponse, error) {
 		return dto.LoginResponse{}, fmt.Errorf("password incorrect")
 	}
 	seeker.Password = ""
-	token, err := util.GenerateToken(seeker.Username)
+	token, err := s.jwt.GenerateToken(seeker.Username)
 	if err != nil {
 		return dto.LoginResponse{}, fmt.Errorf("password incorrect")
 	}
@@ -48,6 +50,6 @@ func (s *seekerServ) CreatedNewSeeker(payload model.Seekers) (model.Seekers, err
 }
 
 // constractor
-func NewSeekerServ(reposi repository.SeekerRepo) SeekerServ {
-	return &seekerServ{repo: reposi}
+func NewSeekerServ(reposi repository.SeekerRepo, jwt util.JwtToken) SeekerServ {
+	return &seekerServ{repo: reposi, jwt: jwt}
 }

@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"kostless-api/config"
 	"kostless-api/controller"
+	"kostless-api/middleware"
 	"kostless-api/repository"
 	"kostless-api/service"
+	"kostless-api/util"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -16,6 +18,8 @@ import (
 type Server struct {
 	sS service.SeekerServ
 	uS service.UserServ
+	jS util.JwtToken
+	aM middleware.AuthMiddleware
 	engine *gin.Engine
 	PortApp string
 }
@@ -32,25 +36,31 @@ func (s *Server) Start(){
 }
 
 func NewServer() *Server{
-	cn, err := config.LoadConfig()
+	cn, _ := config.NewConfig()
 
-	urlConn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", cn.Database.Host, cn.Database.Port, cn.Database.User, cn.Database.Password, cn.Database.Name)
+	urlConn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", cn.Host, cn.Port, cn.User, cn.Password, cn.Name)
 
 	db, err := sql.Open("postgres", urlConn)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	
+	portApp := cn.AppPort
 	userRepo := repository.NewUserRepo(db)
 	seekerRepo := repository.NewUserSeeker(db)
 
-	userService := service.NewUserServ(userRepo)
-	seekerService := service.NewSeekerServ(seekerRepo)
+	jwtUtil :=  util.NewJwtUtil(cn.JwtConfig)
+	userService := service.NewUserServ(userRepo, jwtUtil)
+	seekerService := service.NewSeekerServ(seekerRepo, jwtUtil)
+
+	authMiddleware := middleware.NewAuthMiddleware(jwtUtil)
 
 	return &Server{
 		sS:      seekerService,
 		uS:      userService,
+		jS: jwtUtil,
+		aM: authMiddleware,
 		engine:  gin.Default(),
-		PortApp: cn.Server.Port,
+		PortApp: portApp,
 	}
 }
