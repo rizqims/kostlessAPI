@@ -16,6 +16,7 @@ import (
 type Server struct {
 	kS      service.KosService
 	rS      service.RoomService
+	tS service.TransService
 	engine  *gin.Engine
 	portApp string
 }
@@ -24,6 +25,7 @@ func (s *Server) initiateRoute() {
 	routerGroup := s.engine.Group("/api/v1")
 	controller.NewKosController(s.kS, routerGroup).Route()
 	controller.NewRoomController(s.rS, routerGroup).Route()
+	controller.NewTransController(routerGroup, s.tS).Route()
 }
 
 func (s *Server) Start() {
@@ -46,14 +48,18 @@ func NewServer() *Server {
 	portApp := conf.Server.Port
 	kosRepo := repository.NewKosRepository(db)
 	roomRepo := repository.NewRoomRepository(db)
+	transRepo := repository.NewTransRepo(db)
+
 
 	kosService := service.NewKosService(kosRepo)
 	roomService := service.NewRoomService(roomRepo)
+	transService := service.NewTransService(transRepo)
 
 	return &Server{
 		portApp: portApp,
 		kS:      kosService,
 		rS:      roomService,
+		tS: transService,
 		engine:  gin.Default(),
 	}
 }
