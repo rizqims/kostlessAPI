@@ -2,12 +2,10 @@ package model
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Room struct {
-	ID          uuid.UUID `json:"id"`
+	ID          string    `json:"id"`
 	Name        string    `json:"name"`
 	Type        string    `json:"type"`
 	Description string    `json:"description"`

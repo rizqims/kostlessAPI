@@ -4,13 +4,11 @@ import (
 	"database/sql"
 	"kostless/model"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type RoomRepository interface {
 	CreateRoom(room model.Room) (model.Room, error)
-	GetRoomByID(id uuid.UUID) (model.Room, error)
+	GetRoomByID(id string) (model.Room, error)
 	GetRoomByAvailability(availability string) ([]model.Room, error)
 	GetRoomByPriceLowerThanOrEqual(price int) ([]model.Room, error)
 }
@@ -25,7 +23,7 @@ func NewRoomRepository(db *sql.DB) *roomRepository {
 
 func (r *roomRepository) CreateRoom(room model.Room) (model.Room, error) {
 	query := `INSERT INTO rooms (name, type, description, avail, price, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`
-	var id uuid.UUID
+	var id string
 	timeNow := time.Now()
 	err := r.db.QueryRow(query, room.Name, room.Type, room.Description, room.Avail, room.Price, timeNow, timeNow).Scan(&id)
 	if err != nil {
@@ -36,7 +34,7 @@ func (r *roomRepository) CreateRoom(room model.Room) (model.Room, error) {
 	return room, nil
 }
 
-func (r *roomRepository) GetRoomByID(id uuid.UUID) (model.Room, error) {
+func (r *roomRepository) GetRoomByID(id string) (model.Room, error) {
 	query := `SELECT id, name, type, description, avail, price, created_at, updated_at FROM rooms WHERE id = $1`
 	var room model.Room
 	err := r.db.QueryRow(query, id).Scan(&room.ID, &room.Name, &room.Type, &room.Description, &room.Avail, &room.Price, &room.CreatedAt, &room.UpdatedAt)

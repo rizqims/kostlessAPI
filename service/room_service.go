@@ -5,8 +5,6 @@ import (
 	"kostless/model/dto"
 	"kostless/repository"
 	"strconv"
-
-	"github.com/google/uuid"
 )
 
 type RoomService interface {
@@ -36,11 +34,7 @@ func (s *roomService) CreateRoom(request dto.RoomRequest) (model.Room, error) {
 }
 
 func (s *roomService) GetRoomByID(id string) (model.Room, error) {
-	newId, err := uuid.Parse(id)
-	if err != nil {
-		return model.Room{}, err
-	}
-	return s.roomRepository.GetRoomByID(newId)
+	return s.roomRepository.GetRoomByID(id)
 }
 
 func (s *roomService) GetRoomByAvailability(availability string) ([]model.Room, error) {
