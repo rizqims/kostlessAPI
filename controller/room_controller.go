@@ -23,7 +23,7 @@ func (r *RoomController) Route() {
 	group.POST("/", r.createRoom)
 	group.GET("/:id", r.getRoomByID)
 	group.GET("/availability/:avail", r.getRoomByAvailability)
-	group.GET("/", r.getRoomByPriceLowerThan)
+	group.GET("/", r.getRoomByPriceLowerThanOrEqual)
 }
 
 func (r *RoomController) createRoom(ctx *gin.Context) {
@@ -65,9 +65,9 @@ func (r *RoomController) getRoomByAvailability(ctx *gin.Context) {
 	util.SendSingleRes(ctx, http.StatusOK, "Success", rooms)
 }
 
-func (r *RoomController) getRoomByPriceLowerThan(ctx *gin.Context) {
+func (r *RoomController) getRoomByPriceLowerThanOrEqual(ctx *gin.Context) {
 	budget := ctx.Query("budget")
-	rooms, err := r.service.GetRoomByPriceLowerThan(budget)
+	rooms, err := r.service.GetRoomByPriceLowerThanOrEqual(budget)
 	if err != nil {
 		util.SendErrRes(ctx, http.StatusInternalServerError, err.Error())
 		return

@@ -13,7 +13,7 @@ type RoomService interface {
 	CreateRoom(request dto.RoomRequest) (model.Room, error)
 	GetRoomByID(id string) (model.Room, error)
 	GetRoomByAvailability(availability string) ([]model.Room, error)
-	GetRoomByPriceLowerThan(budget string) ([]model.Room, error)
+	GetRoomByPriceLowerThanOrEqual(budget string) ([]model.Room, error)
 }
 
 type roomService struct {
@@ -47,10 +47,10 @@ func (s *roomService) GetRoomByAvailability(availability string) ([]model.Room, 
 	return s.roomRepository.GetRoomByAvailability(availability)
 }
 
-func (s *roomService) GetRoomByPriceLowerThan(budget string) ([]model.Room, error) {
+func (s *roomService) GetRoomByPriceLowerThanOrEqual(budget string) ([]model.Room, error) {
 	price, err := strconv.Atoi(budget)
 	if err != nil {
 		return nil, err
 	}
-	return s.roomRepository.GetRoomByPriceLowerThan(price)
+	return s.roomRepository.GetRoomByPriceLowerThanOrEqual(price)
 }

@@ -11,7 +11,7 @@ type RoomRepository interface {
 	CreateRoom(room model.Room) (model.Room, error)
 	GetRoomByID(id uuid.UUID) (model.Room, error)
 	GetRoomByAvailability(availability string) ([]model.Room, error)
-	GetRoomByPriceLowerThan(price int) ([]model.Room, error)
+	GetRoomByPriceLowerThanOrEqual(price int) ([]model.Room, error)
 }
 
 type roomRepository struct {
@@ -66,8 +66,8 @@ func (r *roomRepository) GetRoomByAvailability(availability string) ([]model.Roo
 	return rooms, nil
 }
 
-func (r *roomRepository) GetRoomByPriceLowerThan(price int) ([]model.Room, error) {
-	query := `SELECT id, name, type, description, avail, price, created_at, updated_at FROM rooms WHERE price < $1`
+func (r *roomRepository) GetRoomByPriceLowerThanOrEqual(price int) ([]model.Room, error) {
+	query := `SELECT id, name, type, description, avail, price, created_at, updated_at FROM rooms WHERE price <= $1`
 	rows, err := r.db.Query(query, price)
 	if err != nil {
 		return nil, err
