@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"kostless-api/middleware"
 	"kostless-api/model"
 	"kostless-api/model/dto"
 	"kostless-api/service"
@@ -14,6 +15,7 @@ import (
 type SeekerContr struct {
 	ser service.SeekerServ
 	rg  *gin.RouterGroup
+	aM middleware.AuthMiddleware
 }
 
 // register func
@@ -47,13 +49,76 @@ func (s *SeekerContr) loginSeeker(ctx *gin.Context) {
 	util.SendSingleResponse(ctx, "Success Login", resp, http.StatusOK)
 }
 
+func (s *SeekerContr) GetSeekerByID(ctx *gin.Context) {
+    id := ctx.Param("id")
+    seeker, err := s.ser.GetSeekerByID(id)
+    if err != nil {
+       util.SendErrRes(ctx, http.StatusInternalServerError, "id not found")
+	   return
+    }
+    util.SendSingleResponse(ctx, "seeker found", seeker, http.StatusOK)
+}
+
+func (s *SeekerContr) GetAllSeekers(ctx *gin.Context) {
+    seekers, err := s.ser.GetAllSeekers()
+    if err != nil {
+        util.SendErrRes(ctx, http.StatusInternalServerError, "seeker not found")
+		return
+    }
+	util.SendSingleResponse(ctx, "seekers found", seekers, http.StatusOK)
+}
+
+func (s *SeekerContr) UpdateProfile(ctx *gin.Context) {
+    id := ctx.Param("id")
+    var seeker model.Seekers
+    if err := ctx.ShouldBindJSON(&seeker); err != nil {
+       util.SendErrRes(ctx, http.StatusBadRequest, "failed not found")
+	   return
+    }
+    if err := s.ser.UpdateProfile(id, seeker); err != nil {
+        util.SendErrRes(ctx, http.StatusInternalServerError, "seeker error")
+		return
+    }
+    util.SendSingleResponse(ctx, "seekers updated", seeker, http.StatusOK)
+}
+
+func (s *SeekerContr) DeleteSeeker(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if err := s.ser.DeleteSeeker(id); err != nil {
+        util.SendErrRes(ctx, http.StatusInternalServerError, "seeker failed deleted")
+        return
+    }
+	util.SendSingleResponse(ctx, "seekers deleted", id, http.StatusOK)
+}
+
+func (s *SeekerContr) UpdateAttitudePoints(ctx *gin.Context) {
+    var request struct {
+        ID            string `json:"id"`
+        AttitudePoints int    `json:"attitudePoints"`
+    }
+    if err := ctx.ShouldBindJSON(&request); err != nil {
+        util.SendErrRes(ctx, http.StatusBadRequest, "failed not found")
+        return
+    }
+    if err := s.ser.UpdateAttitudePoints(request.ID, request.AttitudePoints); err != nil {
+        util.SendErrRes(ctx, http.StatusInternalServerError, "attitude failed updated")
+        return
+    }
+    util.SendSingleResponse(ctx, "seekers update attititude success", request, http.StatusOK)
+}
+
 // router
 func (s *SeekerContr) Route() {
 	router := s.rg.Group("/seekers")
 	router.POST("/register", s.regisHandlerSeeker)
 	router.POST("/login", s.loginSeeker)
+	router.GET("/profile/:id", s.aM.CheckToken(), s.GetSeekerByID)
+	router.PUT("/profile/:id", s.aM.CheckToken(), s.UpdateProfile)
+	router.DELETE("/profile/:id", s.aM.CheckToken(), s.DeleteSeeker)
+	router.GET("/profile/getall", s.GetAllSeekers)
+	router.POST("/profile/update", s.UpdateAttitudePoints)
 }
 
-func NewSeekerContr(sS service.SeekerServ, rg *gin.RouterGroup) *SeekerContr {
-	return &SeekerContr{ser: sS, rg: rg}
+func NewSeekerContr(sS service.SeekerServ, rg *gin.RouterGroup, aM middleware.AuthMiddleware) *SeekerContr {
+	return &SeekerContr{ser: sS, rg: rg, aM: aM}
 }

@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"kostless-api/util"
 	"net/http"
 	"strings"
@@ -23,9 +24,11 @@ func (a *authMiddleware) CheckToken() gin.HandlerFunc {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "authorization header require"})
 			return
 		}
-		tokenString := strings.Split(authHeader, "Bearer ")[1]
+		tokenString := strings.Replace(authHeader, "Bearer ", "", -1)
+		fmt.Print("err ====", tokenString)
 		claims, err := a.jwt.ValidateToken(tokenString)
 		if err != nil {
+			fmt.Print("error =====", err)
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 			return
 		}

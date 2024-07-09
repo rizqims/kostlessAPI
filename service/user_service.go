@@ -6,18 +6,33 @@ import (
 	"kostless-api/model/dto"
 	"kostless-api/repository"
 	"kostless-api/util"
+	"time"
 )
 
 // interface
 type UserServ interface {
 	CreatedNewUser(payload model.User) (model.User, error)
 	Login(payload dto.LoginDto) (dto.LoginResponse, error)
+	UpdateProfile(id string, updatedUser model.User) error
+	GetUser(id string) (model.User, error)
 }
 
 // struct
 type userServ struct {
 	repo repository.UserRepo
-	jwt util.JwtToken
+	jwt  util.JwtToken
+}
+
+// GetUser implements UserServ.
+func (u *userServ) GetUser(id string) (model.User, error) {
+	return u.repo.GetUserById(id)
+}
+
+// UpdateProfile implements UserServ.
+func (u *userServ) UpdateProfile(id string, updatedUser model.User) error {
+	updatedUser.Id = id
+    updatedUser.UpdatedAt = time.Now()
+    return u.repo.PutUpdateUserProf(updatedUser)
 }
 
 // Login implements UserServ.
@@ -32,7 +47,7 @@ func (u *userServ) Login(payload dto.LoginDto) (dto.LoginResponse, error) {
 	}
 	token, err := u.jwt.GenerateToken(user.Username)
 	if err != nil {
-		fmt.Print("errr ===",err)
+		fmt.Print("errr ===", err)
 		return dto.LoginResponse{}, fmt.Errorf("password incorrect")
 	}
 	return token, nil
