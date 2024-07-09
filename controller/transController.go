@@ -18,17 +18,17 @@ func (t *TransController) CreateTransHandler(c *gin.Context) {
 	var payload req.TransCreateReq
 	err := c.ShouldBindBodyWithJSON(&payload)
 	if err != nil {
-		util.SendErrRes(c, http.StatusBadRequest, err.Error())
+		util.SendErrResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	response, err := t.service.CreateTrans(payload)
 	if err != nil {
-		util.SendErrRes(c, http.StatusInternalServerError, err.Error())
+		util.SendErrResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	util.SendSingleRes(c, http.StatusCreated, "success create", response)
+	util.SendSingleResponse(c, http.StatusCreated, "success create", response)
 }
 
 func (t *TransController) Route() {

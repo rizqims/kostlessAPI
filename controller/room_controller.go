@@ -30,48 +30,48 @@ func (r *RoomController) createRoom(ctx *gin.Context) {
 	var request dto.RoomRequest
 	err := ctx.ShouldBindJSON(&request)
 	if err != nil {
-		util.SendErrRes(ctx, http.StatusBadRequest, err.Error())
+		util.SendErrResponse(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	room, err := r.service.CreateRoom(request)
 	if err != nil {
-		util.SendErrRes(ctx, http.StatusInternalServerError, err.Error())
+		util.SendErrResponse(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	util.SendSingleRes(ctx, http.StatusCreated, "Success", room)
+	util.SendSingleResponse(ctx, http.StatusCreated, "Success", room)
 }
 
 func (r *RoomController) getRoomByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	room, err := r.service.GetRoomByID(id)
 	if err != nil {
-		util.SendErrRes(ctx, http.StatusInternalServerError, err.Error())
+		util.SendErrResponse(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	util.SendSingleRes(ctx, http.StatusOK, "Success", room)
+	util.SendSingleResponse(ctx, http.StatusOK, "Success", room)
 }
 
 func (r *RoomController) getRoomByAvailability(ctx *gin.Context) {
 	availability := ctx.Param("avail")
 	rooms, err := r.service.GetRoomByAvailability(availability)
 	if err != nil {
-		util.SendErrRes(ctx, http.StatusInternalServerError, err.Error())
+		util.SendErrResponse(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	util.SendSingleRes(ctx, http.StatusOK, "Success", rooms)
+	util.SendSingleResponse(ctx, http.StatusOK, "Success", rooms)
 }
 
 func (r *RoomController) getRoomByPriceLowerThan(ctx *gin.Context) {
 	budget := ctx.Query("budget")
 	rooms, err := r.service.GetRoomByPriceLowerThan(budget)
 	if err != nil {
-		util.SendErrRes(ctx, http.StatusInternalServerError, err.Error())
+		util.SendErrResponse(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	util.SendSingleRes(ctx, http.StatusOK, "Success", rooms)
+	util.SendSingleResponse(ctx, http.StatusOK, "Success", rooms)
 }
