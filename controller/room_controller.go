@@ -56,6 +56,11 @@ func (r *RoomController) getRoomByID(ctx *gin.Context) {
 
 func (r *RoomController) getRoomByAvailability(ctx *gin.Context) {
 	availability := ctx.Param("avail")
+	if availability != "open" && availability != "occupied" {
+		util.SendErrRes(ctx, http.StatusBadRequest, "Availability must be 'open' or 'occupied'")
+		return
+	}
+
 	rooms, err := r.service.GetRoomByAvailability(availability)
 	if err != nil {
 		util.SendErrRes(ctx, http.StatusInternalServerError, err.Error())
