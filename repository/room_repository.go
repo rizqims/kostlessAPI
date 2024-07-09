@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"kostless/model"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -11,7 +12,7 @@ type RoomRepository interface {
 	CreateRoom(room model.Room) (model.Room, error)
 	GetRoomByID(id uuid.UUID) (model.Room, error)
 	GetRoomByAvailability(availability string) ([]model.Room, error)
-	GetRoomByPriceLowerThan(price int) ([]model.Room, error)
+	GetRoomByPriceLowerThanOrEqual(price int) ([]model.Room, error)
 }
 
 type roomRepository struct {
@@ -25,7 +26,8 @@ func NewRoomRepository(db *sql.DB) *roomRepository {
 func (r *roomRepository) CreateRoom(room model.Room) (model.Room, error) {
 	query := `INSERT INTO rooms (name, type, description, avail, price, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`
 	var id uuid.UUID
-	err := r.db.QueryRow(query, room.Name, room.Type, room.Description, room.Avail, room.Price, room.CreatedAt, room.UpdatedAt).Scan(&id)
+	timeNow := time.Now()
+	err := r.db.QueryRow(query, room.Name, room.Type, room.Description, room.Avail, room.Price, timeNow, timeNow).Scan(&id)
 	if err != nil {
 		return model.Room{}, err
 	}
@@ -66,8 +68,8 @@ func (r *roomRepository) GetRoomByAvailability(availability string) ([]model.Roo
 	return rooms, nil
 }
 
-func (r *roomRepository) GetRoomByPriceLowerThan(price int) ([]model.Room, error) {
-	query := `SELECT id, name, type, description, avail, price, created_at, updated_at FROM rooms WHERE price < $1`
+func (r *roomRepository) GetRoomByPriceLowerThanOrEqual(price int) ([]model.Room, error) {
+	query := `SELECT id, name, type, description, avail, price, created_at, updated_at FROM rooms WHERE price <= $1`
 	rows, err := r.db.Query(query, price)
 	if err != nil {
 		return nil, err

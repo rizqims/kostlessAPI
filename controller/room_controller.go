@@ -23,7 +23,7 @@ func (r *RoomController) Route() {
 	group.POST("/", r.createRoom)
 	group.GET("/:id", r.getRoomByID)
 	group.GET("/availability/:avail", r.getRoomByAvailability)
-	group.GET("/", r.getRoomByPriceLowerThan)
+	group.GET("/", r.getRoomByPriceLowerThanOrEqual)
 }
 
 func (r *RoomController) createRoom(ctx *gin.Context) {
@@ -56,6 +56,11 @@ func (r *RoomController) getRoomByID(ctx *gin.Context) {
 
 func (r *RoomController) getRoomByAvailability(ctx *gin.Context) {
 	availability := ctx.Param("avail")
+	if availability != "open" && availability != "occupied" {
+		util.SendErrRes(ctx, http.StatusBadRequest, "Availability must be 'open' or 'occupied'")
+		return
+	}
+
 	rooms, err := r.service.GetRoomByAvailability(availability)
 	if err != nil {
 		util.SendErrResponse(ctx, http.StatusInternalServerError, err.Error())
@@ -65,9 +70,9 @@ func (r *RoomController) getRoomByAvailability(ctx *gin.Context) {
 	util.SendSingleResponse(ctx, http.StatusOK, "Success", rooms)
 }
 
-func (r *RoomController) getRoomByPriceLowerThan(ctx *gin.Context) {
+func (r *RoomController) getRoomByPriceLowerThanOrEqual(ctx *gin.Context) {
 	budget := ctx.Query("budget")
-	rooms, err := r.service.GetRoomByPriceLowerThan(budget)
+	rooms, err := r.service.GetRoomByPriceLowerThanOrEqual(budget)
 	if err != nil {
 		util.SendErrResponse(ctx, http.StatusInternalServerError, err.Error())
 		return
