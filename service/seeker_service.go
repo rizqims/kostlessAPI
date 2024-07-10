@@ -7,6 +7,8 @@ import (
 	"kostless-api/repository"
 	"kostless-api/util"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // interface
@@ -44,26 +46,26 @@ func (s *seekerServ) GetSeekerByID(id string) (model.Seekers, error) {
 // UpdateAttitudePoints implements SeekerServ.
 func (s *seekerServ) UpdateAttitudePoints(id string, attitudePoints int) error {
 	seeker, err := s.repo.GetSeekerByID(id)
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 	if attitudePoints < 5 {
 		if err := util.SendEmail(seeker.Email, "Low Attitude Points", "Your attitude points are below 5."); err != nil {
-            return err
+			return err
 		}
-    } else if attitudePoints > 10 {
+	} else if attitudePoints > 10 {
 		if err := util.NotifyOwner("Add vouchers to seeker with ID " + id); err != nil {
-            return err
-        }
-    }
-    return s.repo.UpdateAttitudePoints(id, attitudePoints)
+			return err
+		}
+	}
+	return s.repo.UpdateAttitudePoints(id, attitudePoints)
 }
 
 // UpdateProfile implements SeekerServ.
 func (s *seekerServ) UpdateProfile(id string, updatedSeeker model.Seekers) error {
 	updatedSeeker.Id = id
-    updatedSeeker.UpdatedAt = time.Now()
-    return s.repo.UpdateSeeker(updatedSeeker)
+	updatedSeeker.UpdatedAt = time.Now()
+	return s.repo.UpdateSeeker(id, updatedSeeker)
 }
 
 // Login implements SeekerServ.
@@ -78,7 +80,7 @@ func (s *seekerServ) Login(payload dto.LoginDto) (dto.LoginResponse, error) {
 		return dto.LoginResponse{}, fmt.Errorf("password incorrect")
 	}
 	seeker.Password = ""
-	token, err := s.jwt.GenerateToken(seeker.Username)
+	token, err := s.jwt.GenerateToken(seeker.Id, seeker.Username)
 	if err != nil {
 		return dto.LoginResponse{}, fmt.Errorf("password incorrect")
 	}
@@ -87,6 +89,7 @@ func (s *seekerServ) Login(payload dto.LoginDto) (dto.LoginResponse, error) {
 
 // register implement
 func (s *seekerServ) CreatedNewSeeker(payload model.Seekers) (model.Seekers, error) {
+	payload.Id = uuid.New().String()
 	hash, error := util.HashPassword(payload.Password)
 	if error != nil {
 		return model.Seekers{}, error

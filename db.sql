@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users(
     password VARCHAR(100),
     email VARCHAR(50),
     phone_number VARCHAR(16),
+    photo_profile VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP
 );
@@ -43,6 +44,7 @@ CREATE TABLE IF NOT EXISTS seekers(
     phone_number VARCHAR(16),
     attitude_points INT,
     status VARCHAR(50),
+    photo_profile VARCHAR(255),
     room_id UUID,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,

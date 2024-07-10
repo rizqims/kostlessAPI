@@ -14,8 +14,8 @@ import (
 
 // struct
 type UserContr struct {
-	ser service.UserServ
-	rg  *gin.RouterGroup
+	ser        service.UserServ
+	rg         *gin.RouterGroup
 	middleware middleware.AuthMiddleware
 }
 
@@ -36,14 +36,14 @@ func (u *UserContr) regisHandler(ctx *gin.Context) {
 	util.SendSingleResponse(ctx, "Succesfully Created data", data, http.StatusOK)
 }
 
-//login handler
+// login handler
 func (u *UserContr) login(ctx *gin.Context) {
 	var payload dto.LoginDto
 	if err := ctx.ShouldBindBodyWithJSON(&payload); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"failed to parsing": err.Error()})
 		return
 	}
-	resp , errors := u.ser.Login(payload)
+	resp, errors := u.ser.Login(payload)
 	if errors != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"failed to parsing": errors.Error()})
 		return
@@ -51,34 +51,35 @@ func (u *UserContr) login(ctx *gin.Context) {
 	util.SendSingleResponse(ctx, "Success Login", resp, http.StatusOK)
 }
 
-//get id
+// get id
 func (u *UserContr) getUserId(ctx *gin.Context) {
 	id := ctx.Param("id")
-    users , err := u.ser.GetUser(id)
-    if err != nil {
-        util.SendErrRes(ctx, http.StatusInternalServerError, "id not found")
-        return
-    }
+	users, err := u.ser.GetUser(id)
+	if err != nil {
+		fmt.Print("err===", err)
+		util.SendErrRes(ctx, http.StatusInternalServerError, "id not found")
+		return
+	}
 	util.SendSingleResponse(ctx, "Id found", users, http.StatusOK)
 }
 
 func (u *UserContr) updateUser(ctx *gin.Context) {
+	var updatedUser model.User
+	if err := ctx.ShouldBindJSON(&updatedUser); err != nil {
+		util.SendErrRes(ctx, http.StatusInternalServerError, "error updated")
+		return
+	}
 	id := ctx.Param("id")
-    var updatedUser model.User
-    if err := ctx.ShouldBindJSON(&updatedUser); err != nil {
-       util.SendErrRes(ctx, http.StatusInternalServerError, "error updated")
-        return
-    }
-    err := u.ser.UpdateProfile(id, updatedUser)
-    if err != nil {
-        util.SendErrRes(ctx, http.StatusInternalServerError, "failed to updated")
-        return
-    }
-    user, err := u.ser.GetUser(id)
-    if err != nil {
-       util.SendErrRes(ctx, http.StatusInternalServerError, "updated error")
-        return
-    }
+	err := u.ser.UpdateProfile(id, updatedUser)
+	if err != nil {
+		util.SendErrRes(ctx, http.StatusInternalServerError, "failed to updated")
+		return
+	}
+	user, err := u.ser.GetUser(id)
+	if err != nil {
+		util.SendErrRes(ctx, http.StatusInternalServerError, "updated error")
+		return
+	}
 	util.SendSingleResponse(ctx, "Success Updated", user, http.StatusOK)
 }
 
@@ -88,9 +89,9 @@ func (u *UserContr) Route() {
 	router.POST("/register", u.regisHandler)
 	router.POST("/login", u.login)
 	router.GET("/profile/:id", u.middleware.CheckToken(), u.getUserId)
-	router.PUT("/profile/:id",u.middleware.CheckToken(), u.updateUser)
+	router.PUT("/profile/id", u.middleware.CheckToken(), u.updateUser)
 }
 
-func NewUserContr(uS service.UserServ, rg *gin.RouterGroup, aM middleware.AuthMiddleware) *UserContr{
+func NewUserContr(uS service.UserServ, rg *gin.RouterGroup, aM middleware.AuthMiddleware) *UserContr {
 	return &UserContr{ser: uS, rg: rg, middleware: aM}
 }

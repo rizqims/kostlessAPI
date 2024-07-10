@@ -7,6 +7,8 @@ import (
 	"kostless-api/repository"
 	"kostless-api/util"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // interface
@@ -31,8 +33,8 @@ func (u *userServ) GetUser(id string) (model.User, error) {
 // UpdateProfile implements UserServ.
 func (u *userServ) UpdateProfile(id string, updatedUser model.User) error {
 	updatedUser.Id = id
-    updatedUser.UpdatedAt = time.Now()
-    return u.repo.PutUpdateUserProf(updatedUser)
+	updatedUser.UpdatedAt = time.Now()
+	return u.repo.PutUpdateUserProf(id, updatedUser)
 }
 
 // Login implements UserServ.
@@ -45,7 +47,7 @@ func (u *userServ) Login(payload dto.LoginDto) (dto.LoginResponse, error) {
 	if err != nil {
 		return dto.LoginResponse{}, fmt.Errorf("password incorrect")
 	}
-	token, err := u.jwt.GenerateToken(user.Username)
+	token, err := u.jwt.GenerateToken(user.Id, user.Username)
 	if err != nil {
 		fmt.Print("errr ===", err)
 		return dto.LoginResponse{}, fmt.Errorf("password incorrect")
@@ -55,6 +57,7 @@ func (u *userServ) Login(payload dto.LoginDto) (dto.LoginResponse, error) {
 
 // register implement
 func (u *userServ) CreatedNewUser(payload model.User) (model.User, error) {
+	payload.Id = uuid.New().String()
 	hash, error := util.HashPassword(payload.Password)
 	if error != nil {
 		return model.User{}, error

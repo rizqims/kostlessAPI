@@ -2,16 +2,16 @@ package util
 
 import (
 	"errors"
+	"fmt"
 	"kostless-api/config"
 	"kostless-api/model/dto"
 	"time"
-	"fmt"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
 type JwtToken interface {
-	GenerateToken(username string) (dto.LoginResponse, error)
+	GenerateToken(id, username string) (dto.LoginResponse, error)
 	ValidateToken(tokenString string) (jwt.MapClaims, error)
 }
 
@@ -19,13 +19,14 @@ type jwtClaims struct {
 	config config.JwtConfig
 }
 
-func (j *jwtClaims) GenerateToken(username string) (dto.LoginResponse, error) {
+func (j *jwtClaims) GenerateToken(id, username string) (dto.LoginResponse, error) {
 	claims := dto.JwtTokenClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer: j.config.Issues,
-			ExpiresAt : jwt.NewNumericDate(time.Now().Add(j.config.Durasi * time.Hour)),
-			IssuedAt: jwt.NewNumericDate(time.Now()),
+			Issuer:    j.config.Issues,
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(j.config.Durasi * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
+		Id:       id,
 		Username: username,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -41,7 +42,7 @@ func (j *jwtClaims) ValidateToken(tokenString string) (jwt.MapClaims, error) {
 		return []byte(j.config.Key), nil
 	})
 	if err != nil {
-		return nil,  errors.New("failed verify token")
+		return nil, errors.New("failed verify token")
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !token.Valid || !ok || claims["iss"] != j.config.Issues {
@@ -51,6 +52,6 @@ func (j *jwtClaims) ValidateToken(tokenString string) (jwt.MapClaims, error) {
 	return claims, nil
 }
 
-func NewJwtUtil(cg config.JwtConfig) JwtToken{
+func NewJwtUtil(cg config.JwtConfig) JwtToken {
 	return &jwtClaims{config: cg}
 }
