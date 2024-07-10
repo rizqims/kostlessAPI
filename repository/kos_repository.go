@@ -8,6 +8,7 @@ import (
 
 type KosRepository interface {
 	CreateKos(kos model.Kos) (model.Kos, error)
+	UpdateKos(kos model.Kos) (model.Kos, error)
 }
 
 type kosRepository struct {
@@ -27,6 +28,19 @@ func (r *kosRepository) CreateKos(kos model.Kos) (model.Kos, error) {
 	}
 
 	kos.CreatedAt = timeNow
+	kos.UpdatedAt = timeNow
+
+	return kos, nil
+}
+
+func (r *kosRepository) UpdateKos(kos model.Kos) (model.Kos, error) {
+	query := `UPDATE kos SET name = $1, address = $2, room_count = $3, coordinate = $4, description = $5, rules = $6, updated_at = $7 WHERE id = $8`
+	timeNow := time.Now()
+	_, err := r.db.Exec(query, kos.Name, kos.Address, kos.RoomCount, kos.Coordinate, kos.Description, kos.Rules, timeNow, kos.ID)
+	if err != nil {
+		return model.Kos{}, err
+	}
+
 	kos.UpdatedAt = timeNow
 
 	return kos, nil
