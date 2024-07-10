@@ -8,6 +8,7 @@ import (
 
 type KosService interface {
 	CreateKos(request dto.KosRequest) (model.Kos, error)
+	UpdateKos(id string, request dto.KosRequest) (model.Kos, error)
 }
 
 type kosService struct {
@@ -29,4 +30,18 @@ func (s *kosService) CreateKos(request dto.KosRequest) (model.Kos, error) {
 	}
 
 	return s.repo.CreateKos(kos)
+}
+
+func (s *kosService) UpdateKos(id string, request dto.KosRequest) (model.Kos, error) {
+	kos := model.Kos{
+		ID:          id,
+		Name:        request.Name,
+		Address:     request.Address,
+		RoomCount:   request.RoomCount,
+		Coordinate:  request.Coordinate,
+		Description: request.Description,
+		Rules:       request.Rules,
+	}
+
+	return s.repo.UpdateKos(kos)
 }
