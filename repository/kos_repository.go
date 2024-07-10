@@ -9,6 +9,7 @@ import (
 type KosRepository interface {
 	CreateKos(kos model.Kos) (model.Kos, error)
 	UpdateKos(kos model.Kos) (model.Kos, error)
+	DeleteKos(id string) error
 }
 
 type kosRepository struct {
@@ -44,4 +45,14 @@ func (r *kosRepository) UpdateKos(kos model.Kos) (model.Kos, error) {
 	kos.UpdatedAt = timeNow
 
 	return kos, nil
+}
+
+func (r *kosRepository) DeleteKos(id string) error {
+	query := `DELETE FROM kos WHERE id = $1`
+	_, err := r.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
