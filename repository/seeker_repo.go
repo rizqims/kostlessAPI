@@ -11,6 +11,7 @@ import (
 type SeekerRepo interface {
 	CreatedNewSeeker(payload model.Seekers) (model.Seekers, error)
 	GetBySeeker(username string) (model.Seekers, error)
+	GetByID(id string)(model.Seekers, error)
 }
 
 // struct
@@ -22,6 +23,15 @@ type seekerRepo struct {
 func (s *seekerRepo) GetBySeeker(username string) (model.Seekers, error) {
 	var seeker model.Seekers
 	err := s.db.QueryRow(`SELECT id, username, password, fullname, phone_number, status, created_at, updated_at FROM seekers WHERE username=$1`, username).Scan(&seeker.Id, &seeker.Username, &seeker.Password, &seeker.Fullname, &seeker.Email, &seeker.Status, &seeker.CreatedAt, &seeker.UpdatedAt)
+	if err != nil {
+		return model.Seekers{}, err
+	}
+	return seeker, nil
+}
+
+func (s *seekerRepo) GetByID(id string) (model.Seekers, error) {
+	var seeker model.Seekers
+	err := s.db.QueryRow(`SELECT id, username, password, fullname, email, phone_number, status, created_at, updated_at FROM seekers WHERE id=$1`, id).Scan(&seeker.Id, &seeker.Username, &seeker.Password, &seeker.Fullname, &seeker.Email, &seeker.Status, &seeker.CreatedAt, &seeker.UpdatedAt)
 	if err != nil {
 		return model.Seekers{}, err
 	}
