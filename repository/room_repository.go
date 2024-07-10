@@ -23,14 +23,15 @@ func NewRoomRepository(db *sql.DB) *roomRepository {
 
 func (r *roomRepository) CreateRoom(room model.Room) (model.Room, error) {
 	query := `INSERT INTO rooms (name, type, description, avail, price, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`
-	var id string
 	timeNow := time.Now()
-	err := r.db.QueryRow(query, room.Name, room.Type, room.Description, room.Avail, room.Price, timeNow, timeNow).Scan(&id)
+	err := r.db.QueryRow(query, room.Name, room.Type, room.Description, room.Avail, room.Price, timeNow, timeNow).Scan(&room.ID)
 	if err != nil {
 		return model.Room{}, err
 	}
 
-	room.ID = id
+	room.CreatedAt = timeNow
+	room.UpdatedAt = timeNow
+
 	return room, nil
 }
 
