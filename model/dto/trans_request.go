@@ -1,4 +1,4 @@
-package req
+package dto
 
 type TransCreateReq struct {
 	RoomID    string    `json:"roomId"`
@@ -17,4 +17,14 @@ type TransCreateReq struct {
 // 	"months": 3,
 // 	"payLater": false,
 // 	"dueDate": "2023-03-03"
+// }
+
+type RenewTrans struct {
+	
+}
+
+// {
+// 	"transID":"l",
+// 	"payment_status":"",
+// 	""
 // }

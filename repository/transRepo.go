@@ -12,6 +12,7 @@ type TransRepo interface {
 	GetTransByID(id string) (model.Trans, error)
 	GetTransHistory() ([]model.Trans, error)
 	GetPaylaterList() ([]model.Trans, error)
+	GetTransByMonth(startDate, endDate string)([]model.Trans, error)
 }
 
 type transRepo struct {
@@ -147,6 +148,39 @@ func (t *transRepo) GetPaylaterList() ([]model.Trans, error) {
 		trans.Total = int(total.Int64)
 		transList = append(transList, trans)
 	}
+	return transList, nil
+}
+
+func (t *transRepo) GetTransByMonth(startDate, endDate string)([]model.Trans, error){
+	rows, err := t.db.Query(`SELECT * FROM bookings WHERE start_date >= $1 AND start_date <= $2`, startDate, endDate)
+	if err != nil {
+		return nil, err
+	}
+
+	var transList = []model.Trans{}
+	var disc, total sql.NullInt64
+	for rows.Next(){
+		var trans model.Trans
+		err := rows.Scan(
+			&trans.ID,
+			&trans.RoomID,
+			&trans.SeekerID,
+			&trans.StartDate,
+			&trans.EndDate,
+			&disc,
+			&total,
+			&trans.PayLater,
+			&trans.DueDate,
+			&trans.PaymentStatus,
+			&trans.CreatedAt,
+			&trans.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		transList = append(transList, trans)
+	}
+	fmt.Println(transList)
 	return transList, nil
 }
 

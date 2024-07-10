@@ -4,17 +4,18 @@ import (
 	"errors"
 	"fmt"
 	"kostless/model"
-	"kostless/model/req"
+	"kostless/model/dto"
 	"kostless/repository"
 	"net/smtp"
 	"time"
 )
 
 type TransService interface {
-	CreateTrans(payload req.TransCreateReq) (model.Trans, error)
+	CreateTrans(payload dto.TransCreateReq) (model.Trans, error)
 	GetTransByID(id string) (model.Trans, error)
 	GetTransHistory() ([]model.Trans, error)
 	GetPaylaterList() ([]model.Trans, error)
+	GetTransByMonth(month, year string)([]model.Trans, error)
 }
 
 type transService struct {
@@ -24,7 +25,7 @@ type transService struct {
 	roomRepo   repository.RoomRepository
 }
 
-func (t *transService) CreateTrans(payload req.TransCreateReq) (model.Trans, error) {
+func (t *transService) CreateTrans(payload dto.TransCreateReq) (model.Trans, error) {
 	var trans model.Trans
 
 	// TODO kaitkan dengan user asli
@@ -113,6 +114,28 @@ func (t *transService) GetPaylaterList() ([]model.Trans, error){
 	if err != nil {
 		return nil, fmt.Errorf("GetPaylaterListService: get trans error: ", err)
 	}
+	return transList, nil
+}
+
+func (t *transService) GetTransByMonth(month, year string)([]model.Trans, error){
+	rawDate := fmt.Sprintf("%v-%v-01", year, month)
+
+	startDate, err := time.Parse(`2006-January-02`, rawDate)
+	if err != nil {
+		return nil, err
+	}
+	endDate := startDate.AddDate(0, 1, 0)
+	fmt.Println(startDate, endDate)
+
+	resStartDate := startDate.Format(`2006-01-02`)
+	resEndDate := endDate.Format(`2006-01-02`)
+	fmt.Println(resStartDate, resEndDate)
+
+	transList, err := t.transRepo.GetTransByMonth(resStartDate, resEndDate)
+	if err != nil {
+		return nil, err
+	}
+	
 	return transList, nil
 }
 
