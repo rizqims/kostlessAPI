@@ -9,6 +9,7 @@ import (
 type KosService interface {
 	CreateKos(request dto.KosRequest) (model.Kos, error)
 	UpdateKos(id string, request dto.KosRequest) (model.Kos, error)
+	DeleteKos(id string) error
 }
 
 type kosService struct {
@@ -44,4 +45,8 @@ func (s *kosService) UpdateKos(id string, request dto.KosRequest) (model.Kos, er
 	}
 
 	return s.repo.UpdateKos(kos)
+}
+
+func (s *kosService) DeleteKos(id string) error {
+	return s.repo.DeleteKos(id)
 }
