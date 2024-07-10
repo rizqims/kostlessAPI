@@ -78,6 +78,21 @@ func (t *TransController) GetTransByMonth(c *gin.Context){
 	util.SendSingleResponse(c, http.StatusOK, "success retrieve getbymonth", response)
 }
 
+func (t *TransController) UpdatePaylaterHandler(c *gin.Context){
+	var payload dto.UpdatePaylaterReq
+	err := c.ShouldBindJSON(&payload)
+	if err != nil {
+		util.SendErrResponse(c, http.StatusBadRequest, err.Error())
+	}
+
+	response, err := t.service.UpdatePaylater(payload)
+	if err != nil {
+		util.SendErrResponse(c, http.StatusInternalServerError, err.Error())
+	}
+
+	util.SendSingleResponse(c, http.StatusOK, "success update paylater", response)
+}
+
 func (t *TransController) Route() {
 	group := t.rg.Group("trans")
 	group.POST("/create", t.CreateTransHandler)
@@ -85,6 +100,7 @@ func (t *TransController) Route() {
 	group.GET("/", t.GetTransHistoryHandler)
 	group.GET("/paylaterlist", t.GetPaylaterListHandler)
 	group.GET("/getbymonth", t.GetTransByMonth)
+	group.PUT("/updatepaylater", t.UpdatePaylaterHandler)
 }
 
 func NewTransController(rg *gin.RouterGroup, service service.TransService) *TransController {

@@ -1,12 +1,28 @@
 package dto
 
+import "time"
+
 type TransCreateReq struct {
-	RoomID    string    `json:"roomId"`
-	SeekerID  string    `json:"seekerId"`
+	RoomID    string `json:"roomId"`
+	SeekerID  string `json:"seekerId"`
 	StartDate string `json:"startDate"`
-	Months    int       `json:"months"`
-	PayLater  bool      `json:"payLater"`
+	Months    int    `json:"months"`
+	PayLater  bool   `json:"payLater"`
 	DueDate   string `json:"dueDate"`
+}
+
+type UpdatePaylaterReq struct {
+	SeekerID string `json:"seekerId"`
+	TransID string `json:"transId"`
+	Total   int    `json:"total"`
+}
+
+type UpdatePaylaterRes struct {
+	TransID          string    `json:"transId"`
+	IsOverdue        bool      `json:"isOverdue"`
+	DueDate          time.Time `json:"dueDate"`
+	CurrentTime      time.Time `json:"currentTime"`
+	TotalWithPenalty int       `json:"totalWithPenalty"`
 }
 
 // req json
@@ -20,7 +36,6 @@ type TransCreateReq struct {
 // }
 
 type RenewTrans struct {
-	
 }
 
 // {

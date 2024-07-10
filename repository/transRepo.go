@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"kostless/model"
+	"kostless/model/dto"
 	"time"
 )
 
@@ -12,7 +13,8 @@ type TransRepo interface {
 	GetTransByID(id string) (model.Trans, error)
 	GetTransHistory() ([]model.Trans, error)
 	GetPaylaterList() ([]model.Trans, error)
-	GetTransByMonth(startDate, endDate string)([]model.Trans, error)
+	GetTransByMonth(startDate, endDate string) ([]model.Trans, error)
+	UpdatePaylater(payload dto.UpdatePaylaterReq) (model.Trans, error)
 }
 
 type transRepo struct {
@@ -151,7 +153,7 @@ func (t *transRepo) GetPaylaterList() ([]model.Trans, error) {
 	return transList, nil
 }
 
-func (t *transRepo) GetTransByMonth(startDate, endDate string)([]model.Trans, error){
+func (t *transRepo) GetTransByMonth(startDate, endDate string) ([]model.Trans, error) {
 	rows, err := t.db.Query(`SELECT * FROM bookings WHERE start_date >= $1 AND start_date <= $2`, startDate, endDate)
 	if err != nil {
 		return nil, err
@@ -159,7 +161,7 @@ func (t *transRepo) GetTransByMonth(startDate, endDate string)([]model.Trans, er
 
 	var transList = []model.Trans{}
 	var disc, total sql.NullInt64
-	for rows.Next(){
+	for rows.Next() {
 		var trans model.Trans
 		err := rows.Scan(
 			&trans.ID,
@@ -184,6 +186,14 @@ func (t *transRepo) GetTransByMonth(startDate, endDate string)([]model.Trans, er
 	return transList, nil
 }
 
+func (t *transRepo) UpdatePaylater(payload dto.UpdatePaylaterReq) (model.Trans, error){
+	var updatedTrans model.Trans
+	err := t.db.QueryRow(`UPDATE bookings SET pay_later=false, updated_at=$1 WHERE id=$2 RETURNING due_date, total, seeker_id`, time.Now(), payload.TransID).Scan(&updatedTrans.DueDate, &updatedTrans.Total, &updatedTrans.SeekerID)
+	if err != nil {
+		return model.Trans{}, err
+	}
+	return updatedTrans, nil
+}
 func NewTransRepo(db *sql.DB) TransRepo {
 	return &transRepo{
 		db: db,
