@@ -82,7 +82,7 @@ func (s *seekerServ) Login(payload dto.LoginDto) (dto.LoginResponse, error) {
 	seeker.Password = ""
 	token, err := s.jwt.GenerateToken(seeker.Id, seeker.Username)
 	if err != nil {
-		return dto.LoginResponse{}, fmt.Errorf("password incorrect")
+		return dto.LoginResponse{}, fmt.Errorf("failed generate token")
 	}
 	return token, nil
 }

@@ -50,7 +50,7 @@ func (u *userServ) Login(payload dto.LoginDto) (dto.LoginResponse, error) {
 	token, err := u.jwt.GenerateToken(user.Id, user.Username)
 	if err != nil {
 		fmt.Print("errr ===", err)
-		return dto.LoginResponse{}, fmt.Errorf("password incorrect")
+		return dto.LoginResponse{}, fmt.Errorf("failed generate token")
 	}
 	return token, nil
 }
