@@ -2,10 +2,10 @@ package service
 
 import (
 	"fmt"
-	"kostless-api/model"
-	"kostless-api/model/dto"
-	"kostless-api/repository"
-	"kostless-api/util"
+	"kostless/model"
+	"kostless/model/dto"
+	"kostless/repository"
+	"kostless/util"
 	"time"
 
 	"github.com/google/uuid"

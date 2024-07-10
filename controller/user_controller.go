@@ -2,11 +2,11 @@ package controller
 
 import (
 	"fmt"
-	"kostless-api/middleware"
-	"kostless-api/model"
-	"kostless-api/model/dto"
-	"kostless-api/service"
-	"kostless-api/util"
+	"kostless/middleware"
+	"kostless/model"
+	"kostless/model/dto"
+	"kostless/service"
+	"kostless/util"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

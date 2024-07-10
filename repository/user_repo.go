@@ -3,7 +3,7 @@ package repository
 import (
 	"database/sql"
 	//"errors"
-	"kostless-api/model"
+	"kostless/model"
 	//"kostless-api/util"
 	"time"
 )

@@ -3,8 +3,8 @@ package util
 import (
 	"errors"
 	"fmt"
-	"kostless-api/config"
-	"kostless-api/model/dto"
+	"kostless/config"
+	"kostless/model/dto"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"

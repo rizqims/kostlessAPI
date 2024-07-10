@@ -2,7 +2,7 @@ package repository
 
 import (
 	"database/sql"
-	"kostless-api/model"
+	"kostless/model"
 	"time"
 )
 

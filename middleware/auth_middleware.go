@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"fmt"
-	"kostless-api/util"
+	"kostless/util"
 	"net/http"
 	"strings"
 

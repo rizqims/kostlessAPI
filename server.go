@@ -3,12 +3,12 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"kostless-api/config"
-	"kostless-api/controller"
-	"kostless-api/middleware"
-	"kostless-api/repository"
-	"kostless-api/service"
-	"kostless-api/util"
+	"kostless/config"
+	"kostless/controller"
+	"kostless/middleware"
+	"kostless/repository"
+	"kostless/service"
+	"kostless/util"
 	"log"
 
 	"github.com/gin-gonic/gin"
