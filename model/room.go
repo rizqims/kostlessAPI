@@ -6,6 +6,7 @@ import (
 
 type Room struct {
 	ID          string    `json:"id"`
+	KosID       string    `json:"kos_id"`
 	Name        string    `json:"name"`
 	Type        string    `json:"type"`
 	Description string    `json:"description"`
