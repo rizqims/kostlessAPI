@@ -22,6 +22,7 @@ func (k *KosController) Route() {
 	group := k.rg.Group("/kos")
 	group.POST("/", k.createKos)
 	group.PUT("/:id", k.updateKos)
+	group.DELETE("/:id", k.deleteKos)
 }
 
 func (k *KosController) createKos(ctx *gin.Context) {
@@ -57,4 +58,16 @@ func (k *KosController) updateKos(ctx *gin.Context) {
 	}
 
 	util.SendSingleResponse(ctx, http.StatusOK, "Success", kos)
+}
+
+func (k *KosController) deleteKos(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	err := k.service.DeleteKos(id)
+	if err != nil {
+		util.SendErrResponse(ctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	util.SendSingleResponse(ctx, http.StatusOK, "Success", nil)
 }
