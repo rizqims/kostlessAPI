@@ -10,6 +10,7 @@ type KosService interface {
 	CreateKos(request dto.KosRequest) (model.Kos, error)
 	UpdateKos(id string, request dto.KosRequest) (model.Kos, error)
 	DeleteKos(id string) error
+	GetKosByID(id string) (model.Kos, error)
 }
 
 type kosService struct {
@@ -49,4 +50,8 @@ func (s *kosService) UpdateKos(id string, request dto.KosRequest) (model.Kos, er
 
 func (s *kosService) DeleteKos(id string) error {
 	return s.repo.DeleteKos(id)
+}
+
+func (s *kosService) GetKosByID(id string) (model.Kos, error) {
+	return s.repo.GetKosByID(id)
 }
