@@ -11,6 +11,7 @@ type TransRepo interface {
 	CreateTrans(payload model.Trans) (model.Trans, error)
 	GetTransByID(id string) (model.Trans, error)
 	GetTransHistory() ([]model.Trans, error)
+	GetPaylaterList() ([]model.Trans, error)
 }
 
 type transRepo struct {
@@ -108,7 +109,42 @@ func (u *transRepo) GetTransHistory() ([]model.Trans, error) {
 		}
 
 		trans.Discount = int(disc.Int64)
-		trans.Total = int(total.Int64)	
+		trans.Total = int(total.Int64)
+		transList = append(transList, trans)
+	}
+	return transList, nil
+}
+
+func (t *transRepo) GetPaylaterList() ([]model.Trans, error) {
+	rows, err := t.db.Query(`SELECT * FROM bookings WHERE pay_later=$1`, true)
+	if err != nil {
+		return nil, fmt.Errorf("GetPaylaterListRepo: get trans error: ", err)
+	}
+
+	var transList = []model.Trans{}
+	var disc, total sql.NullInt64
+	for rows.Next() {
+		var trans model.Trans
+		err := rows.Scan(
+			&trans.ID,
+			&trans.RoomID,
+			&trans.SeekerID,
+			&trans.StartDate,
+			&trans.EndDate,
+			&disc,
+			&total,
+			&trans.PayLater,
+			&trans.DueDate,
+			&trans.PaymentStatus,
+			&trans.CreatedAt,
+			&trans.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		trans.Discount = int(disc.Int64)
+		trans.Total = int(total.Int64)
 		transList = append(transList, trans)
 	}
 	return transList, nil

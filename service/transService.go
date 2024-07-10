@@ -14,6 +14,7 @@ type TransService interface {
 	CreateTrans(payload req.TransCreateReq) (model.Trans, error)
 	GetTransByID(id string) (model.Trans, error)
 	GetTransHistory() ([]model.Trans, error)
+	GetPaylaterList() ([]model.Trans, error)
 }
 
 type transService struct {
@@ -86,12 +87,12 @@ func (t *transService) CreateTrans(payload req.TransCreateReq) (model.Trans, err
 	return transReq, nil
 }
 
-func (u *transService) GetTransByID(id string) (model.Trans, error) {
+func (t *transService) GetTransByID(id string) (model.Trans, error) {
 	if id == "" {
 		return model.Trans{}, errors.New("id must be present")
 	}
 
-	trans, err := u.transRepo.GetTransByID(id)
+	trans, err := t.transRepo.GetTransByID(id)
 	if err != nil {
 		return model.Trans{}, nil
 	}
@@ -99,10 +100,18 @@ func (u *transService) GetTransByID(id string) (model.Trans, error) {
 	return trans, nil
 }
 
-func (u *transService) GetTransHistory() ([]model.Trans, error) {
-	transList, err := u.transRepo.GetTransHistory()
+func (t *transService) GetTransHistory() ([]model.Trans, error) {
+	transList, err := t.transRepo.GetTransHistory()
 	if err != nil {
 		return nil, fmt.Errorf("GetTransHistoryService: get trans error: ", err)
+	}
+	return transList, nil
+}
+
+func (t *transService) GetPaylaterList() ([]model.Trans, error){
+	transList, err := t.transRepo.GetPaylaterList()
+	if err != nil {
+		return nil, fmt.Errorf("GetPaylaterListService: get trans error: ", err)
 	}
 	return transList, nil
 }
