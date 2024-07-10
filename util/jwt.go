@@ -11,7 +11,7 @@ import (
 )
 
 type JwtToken interface {
-	GenerateToken(username string) (dto.LoginResponse, error)
+	GenerateToken(id, username string) (dto.LoginResponse, error)
 	ValidateToken(tokenString string) (jwt.MapClaims, error)
 }
 
@@ -19,13 +19,14 @@ type jwtClaims struct {
 	config config.JwtConfig
 }
 
-func (j *jwtClaims) GenerateToken(username string) (dto.LoginResponse, error) {
+func (j *jwtClaims) GenerateToken(id, username string) (dto.LoginResponse, error) {
 	claims := dto.JwtTokenClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    j.config.Issues,
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(j.config.Durasi * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
+		Id:       id,
 		Username: username,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

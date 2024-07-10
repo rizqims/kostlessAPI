@@ -11,6 +11,7 @@ type Seekers struct {
 	PhoneNumber  string    `json:"phoneNumber"`
 	AtitudePoits int       `json:"atitudePoints"`
 	Status       string    `json:"status"`
+	PhotoProfile string    `json:"photoProfile"`
 	RoomId       string    `json:"roomId"`
 	CreatedAt    time.Time `json:"createdAt"`
 	UpdatedAt    time.Time `json:"updatedAt"`

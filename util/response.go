@@ -1,6 +1,8 @@
 package util
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,4 +30,20 @@ func SendErrResponse(c *gin.Context, code int, message string) {
 		Code:    code,
 		Message: message,
 	})
+}
+func SendErrRes(c *gin.Context, code int, message string){
+  c.JSON(code, errRes{
+  	Code:    code,
+  	Message: message,
+  })
+}
+
+func SendEmail(to, subject, body string) error {
+    log.Printf("Sending email to: %s, Subject: %s, Body: %s\n", to, subject, body)
+    return nil
+}
+
+func NotifyOwner(message string) error {
+    log.Printf("Notifying owner: %s\n", message)
+    return nil
 }

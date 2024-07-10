@@ -32,8 +32,8 @@ func (s *Server) initiateRoute() {
 	controller.NewKosController(s.kS, routerGroup).Route()
 	controller.NewRoomController(s.rS, routerGroup).Route()
 	controller.NewTransController(routerGroup, s.tS).Route()
-	controller.NewSeekerContr(s.sS, routerGroup).Route()
-	controller.NewUserContr(s.uS, routerGroup).Route()
+	controller.NewSeekerContr(s.sS, routerGroup, s.aM).Route()
+	controller.NewUserContr(s.uS, routerGroup, s.aM).Route()
 }
 
 func (s *Server) Start() {
