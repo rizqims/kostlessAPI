@@ -15,6 +15,7 @@ type TransRepo interface {
 	GetPaylaterList() ([]model.Trans, error)
 	GetTransByMonth(startDate, endDate string) ([]model.Trans, error)
 	UpdatePaylater(payload dto.UpdatePaylaterReq) (model.Trans, error)
+	AccPayment(payload dto.AccPayment) (string, error)
 }
 
 type transRepo struct {
@@ -24,14 +25,15 @@ type transRepo struct {
 func (t *transRepo) CreateTrans(payload model.Trans) (model.Trans, error) {
 	trans, err := t.db.Begin()
 	if err != nil {
-		return model.Trans{}, err
+		return model.Trans{}, fmt.Errorf("begin err: %v", err)
 	}
 
-	err = t.db.QueryRow(`INSERT INTO bookings (room_id, seeker_id, start_date, end_date, total, pay_later, due_date, payment_status, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id, created_at, updated_at`,
+	err = t.db.QueryRow(`INSERT INTO bookings (room_id, seeker_id, start_date, end_date, discount, total, pay_later, due_date, payment_status, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,$11) RETURNING id, created_at, updated_at`,
 		payload.RoomID,
 		payload.SeekerID,
 		payload.StartDate,
 		payload.EndDate,
+		payload.Discount,
 		payload.Total,
 		payload.PayLater,
 		payload.DueDate,
@@ -44,12 +46,12 @@ func (t *transRepo) CreateTrans(payload model.Trans) (model.Trans, error) {
 	)
 	if err != nil {
 		trans.Rollback()
-		return model.Trans{}, err
+		return model.Trans{}, fmt.Errorf("rollback err: %v", err)
 	}
 
 	err = trans.Commit()
 	if err != nil {
-		return model.Trans{}, err
+		return model.Trans{}, fmt.Errorf("commit err: %v", err)
 	}
 
 	return payload, nil
@@ -186,11 +188,20 @@ func (t *transRepo) GetTransByMonth(startDate, endDate string) ([]model.Trans, e
 	return transList, nil
 }
 
-func (t *transRepo) UpdatePaylater(payload dto.UpdatePaylaterReq) (model.Trans, error){
+func (t *transRepo) UpdatePaylater(payload dto.UpdatePaylaterReq) (model.Trans, error) {
 	var updatedTrans model.Trans
 	err := t.db.QueryRow(`UPDATE bookings SET pay_later=false, updated_at=$1 WHERE id=$2 RETURNING due_date, total, seeker_id`, time.Now(), payload.TransID).Scan(&updatedTrans.DueDate, &updatedTrans.Total, &updatedTrans.SeekerID)
 	if err != nil {
 		return model.Trans{}, err
+	}
+	return updatedTrans, nil
+}
+
+func (t *transRepo) AccPayment(payload dto.AccPayment) (string, error) {
+	var updatedTrans string
+	err := t.db.QueryRow(`UPDATE bookings SET pay_later=false, updated_at=$1, payment_status=$2 WHERE id=$3 RETURNING seeker_id`, time.Now(), payload.PaymentStatus, payload.TransID).Scan(&updatedTrans)
+	if err != nil {
+		return "", err
 	}
 	return updatedTrans, nil
 }

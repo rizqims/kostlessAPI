@@ -12,6 +12,7 @@ type VoucherRepo interface {
 	DeleteExpiredVoucher() error
 	GetAllVoucher() ([]model.Voucher, error)
 	GetVoucherBySeekerID(id string) ([]model.Voucher, error)
+	GetVoucherByID(id string)(model.Voucher, error)
 }
 
 type voucherRepo struct {
@@ -25,9 +26,10 @@ func (v *voucherRepo) CreateVoucher(payload dto.CreateVoucherReq) (model.Voucher
 	}
 
 	var newVoucher model.Voucher
+	expired, err := time.Parse(`2006-01-02`, payload.ExpiredDate)
 	err = v.db.QueryRow(`INSERT INTO vouchers (name, expired_date, seeker_id, percent_amount, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, created_at, updated_at`,
 		payload.Name,
-		payload.ExpiredDate,
+		&expired,
 		payload.SeekerID,
 		payload.PercentAmount,
 		time.Now(),
@@ -41,7 +43,7 @@ func (v *voucherRepo) CreateVoucher(payload dto.CreateVoucherReq) (model.Voucher
 		return model.Voucher{}, err
 	}
 	newVoucher.Name = payload.Name
-	newVoucher.ExpiredDate = payload.ExpiredDate
+	newVoucher.ExpiredDate = expired
 	newVoucher.SeekerID = payload.SeekerID
 	newVoucher.PercentAmount = payload.PercentAmount
 	err = trans.Commit()
@@ -89,7 +91,7 @@ func (v *voucherRepo) GetAllVoucher() ([]model.Voucher, error) {
 
 func (v *voucherRepo) GetVoucherBySeekerID(id string) ([]model.Voucher, error){
 	var voucherList []model.Voucher
-	rows, err := v.db.Query(`SELECT * FROM vouchers WHERE id=1`, id)
+	rows, err := v.db.Query(`SELECT * FROM vouchers WHERE seeker_id=$1`, id)
 	if err != nil {
 		return nil, err
 	}
@@ -111,6 +113,23 @@ func (v *voucherRepo) GetVoucherBySeekerID(id string) ([]model.Voucher, error){
 		voucherList = append(voucherList, voucher)
 	}
 	return voucherList, nil
+}
+
+func (v *voucherRepo) GetVoucherByID(id string)(model.Voucher, error){
+	var voucher model.Voucher
+	err := v.db.QueryRow(`SELECT * FROM vouchers WHERE id=$1`, id).Scan(
+		&voucher.ID,
+		&voucher.Name,
+		&voucher.ExpiredDate,
+		&voucher.SeekerID,
+		&voucher.PercentAmount,
+		&voucher.CreatedAt,
+		&voucher.UpdatedAt,
+	)
+	if err != nil {
+		return model.Voucher{}, err
+	}
+	return voucher, nil
 }
 
 func NewVoucherRepo(db *sql.DB) VoucherRepo {

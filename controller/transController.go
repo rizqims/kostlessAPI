@@ -93,14 +93,30 @@ func (t *TransController) UpdatePaylaterHandler(c *gin.Context){
 	util.SendSingleResponse(c, http.StatusOK, "success update paylater", response)
 }
 
+func (t *TransController) AccPayment(c *gin.Context){
+	var payload dto.AccPayment
+	err := c.ShouldBindJSON(&payload)
+	if err != nil {
+		util.SendErrRes(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	message, err := t.service.AccPayment(payload)
+	if err != nil {
+		util.SendErrRes(c, http.StatusInternalServerError, err.Error())
+	}
+
+	util.SendSingleResponse(c, http.StatusOK, message, 0)
+}
+
 func (t *TransController) Route() {
 	group := t.rg.Group("trans")
-	group.POST("/create", t.CreateTransHandler)
-	group.GET("/:id", t.GetTransByIDHandler)
-	group.GET("/", t.GetTransHistoryHandler)
-	group.GET("/paylaterlist", t.GetPaylaterListHandler)
-	group.GET("/getbymonth", t.GetTransByMonth)
-	group.PUT("/updatepaylater", t.UpdatePaylaterHandler)
+	group.POST("/create", t.CreateTransHandler) //
+	group.GET("/:id", t.GetTransByIDHandler) //
+	group.GET("/list", t.GetTransHistoryHandler) //
+	group.GET("/paylater/list", t.GetPaylaterListHandler) //
+	group.GET("/month", t.GetTransByMonth)
+	group.PUT("/paylater", t.UpdatePaylaterHandler)
+	group.PUT("/payment", t.AccPayment)
 }
 
 func NewTransController(rg *gin.RouterGroup, service service.TransService) *TransController {

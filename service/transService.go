@@ -18,6 +18,7 @@ type TransService interface {
 	GetPaylaterList() ([]model.Trans, error)
 	GetTransByMonth(month, year string) ([]model.Trans, error)
 	UpdatePaylater(payload dto.UpdatePaylaterReq) (dto.UpdatePaylaterRes, error)
+	AccPayment(payload dto.AccPayment) (string, error)
 }
 
 type transService struct {
@@ -25,33 +26,56 @@ type transService struct {
 	userRepo   repository.UserRepo
 	seekerRepo repository.SeekerRepo
 	roomRepo   repository.RoomRepository
+	voucherRepo repository.VoucherRepo
 }
 
 func (t *transService) CreateTrans(payload dto.TransCreateReq) (model.Trans, error) {
 	var trans model.Trans
-
-	// TODO kaitkan dengan user asli
-	// user, err := t.userRepo.GetByUsername("aseppp")
-	// if err != nil {
-	// 	return model.Trans{}, err
-	// }
-
-	// seeker, err := t.seekerRepo.GetByID(payload.SeekerID)
-	// if err != nil {
-	// 	return model.Trans{}, err
-	// }
+	seeker, err := t.seekerRepo.GetSeekerByID(payload.SeekerID)
+	if err != nil {
+		return model.Trans{}, fmt.Errorf("error in GetSeekerByID: %v", err)
+	}
 
 	startDate, err := time.Parse(`2006-01-02`, payload.StartDate)
 	if err != nil {
-		return model.Trans{}, err
+		return model.Trans{}, fmt.Errorf("error in time.Parse: %v", err)
 	}
 	trans.EndDate = startDate.AddDate(0, payload.Months, 0)
-	// TODO implement total logic
-	// total, err := t.roomRepo.GetRoomByID(payload.RoomID)
+
+	// implement total logic
+	room, err := t.roomRepo.GetRoomByID(payload.RoomID)
+	if err != nil {
+		return model.Trans{}, fmt.Errorf("error in GetRoomByID: %v", err)
+	}
+
+	totalPrice := room.Price * payload.Months
 
 	// validate date
 	if trans.EndDate.Before(startDate) {
 		return model.Trans{}, errors.New("endDate should not before StartDate")
+	} else if startDate.Before(time.Now()){
+		return model.Trans{}, errors.New("startDate should be in the future")
+	}
+
+	//validate voucher
+	if payload.VoucherID == ""{
+		trans.Discount = 0
+		trans.Total = totalPrice
+		fmt.Print("this get printed")
+	} else {
+		voucher, err := t.voucherRepo.GetVoucherByID(payload.VoucherID)
+		if err != nil {
+			return model.Trans{}, fmt.Errorf("error in getvoucher: %v", err)
+		} else if voucher.SeekerID != payload.SeekerID{
+			return model.Trans{}, fmt.Errorf("error in seekermatch : %v", err)
+		}
+
+		// pusing pala gwej
+		discount := (float32(voucher.PercentAmount)/100) * 100
+		discountedPrice := float32(room.Price)* discount
+		fmt.Println(discountedPrice)
+		trans.Discount = voucher.PercentAmount
+		trans.Total = int(discountedPrice)
 	}
 
 	// validate paylater
@@ -63,7 +87,7 @@ func (t *transService) CreateTrans(payload dto.TransCreateReq) (model.Trans, err
 		}
 		trans.DueDate = trueDueDate
 	} else {
-		trans.PaymentStatus = "paid"
+		trans.PaymentStatus = "pending"
 		falseDueDate, err := time.Parse(`2006-01-02`, `2024-01-01`)
 		if err != nil {
 			return model.Trans{}, err
@@ -74,20 +98,19 @@ func (t *transService) CreateTrans(payload dto.TransCreateReq) (model.Trans, err
 	trans.RoomID = payload.RoomID
 	trans.SeekerID = payload.SeekerID
 	trans.StartDate = startDate
-	trans.Total = 10000 // hardcoded bcs no room yet
 	trans.PayLater = payload.PayLater
 
 	transReq, err := t.transRepo.CreateTrans(trans)
 	if err != nil {
-		return model.Trans{}, err
+		return model.Trans{}, fmt.Errorf("createtransrepo error: %v", err)
 	}
 
 	// TODO use detailed message
 	err = notifyTransToUsers(
-		"rizqims100@gmail.com",
+		seeker.Email,
 		"New Booking Request",
-		"seeker named Asep wants to books your Kost",
-		"localhost:8080/api/v1/getall",
+		fmt.Sprintf("seeker named %v wants to books your Kost", seeker.Fullname),
+		fmt.Sprintf("localhost:8080/api/v1/trans/"),
 	)
 	if err != nil {
 		return model.Trans{}, err
@@ -173,15 +196,15 @@ func (t *transService) UpdatePaylater(payload dto.UpdatePaylaterReq) (dto.Update
 		}, errors.New("money is not enough to pay the transaction")
 	}
 
-	// seeker, err := t.seekerRepo.GetByID(payload.SeekerID)
-	// if err != nil {
-	// 	return model.Trans{}, err
-	// }
+	seeker, err := t.seekerRepo.GetSeekerByID(payload.SeekerID)
+	if err != nil {
+		return dto.UpdatePaylaterRes{}, err
+	}
 
 	err = notifyTransToUsers(
 		"rizqims100@gmail.com",
 		"Paylater payment request",
-		"seeker named Asep wants to pay previous pending payment",
+		fmt.Sprintf("seeker named %v wants to pay previous pending payment", seeker.Fullname),
 		"localhost:8080/api/v1/paylaterlist",
 	)
 	if err != nil {
@@ -195,6 +218,27 @@ func (t *transService) UpdatePaylater(payload dto.UpdatePaylaterReq) (dto.Update
 		CurrentTime:      time.Now(),
 		TotalWithPenalty: int(totalWithPenalty),
 	}, nil
+}
+
+func (t *transService) AccPayment(payload dto.AccPayment) (string, error){	
+	result, err := t.transRepo.AccPayment(payload)
+	if err != nil {
+		return "", err
+	}
+
+	seeker, err := t.seekerRepo.GetSeekerByID(result)
+	if err != nil {
+		return "", err
+	}
+
+	notifyTransToUsers(
+		seeker.Email,
+		"Transaction payment",
+		"Your transaction has been validated by the owner. Below is the details of your transaction",
+		fmt.Sprintf("localhost:8080/api/v1/trans/%v", payload.TransID),
+	)
+
+	return "success accepting payment, seeker will be notified", nil
 }
 
 func notifyTransToUsers(to, subject, desc, link string) error {
@@ -229,11 +273,12 @@ func notifyTransToUsers(to, subject, desc, link string) error {
 	return nil
 }
 
-func NewTransService(transRepo repository.TransRepo, userRepo repository.UserRepo, seekerRepo repository.SeekerRepo, roomrepo repository.RoomRepository) TransService {
+func NewTransService(transRepo repository.TransRepo, userRepo repository.UserRepo, seekerRepo repository.SeekerRepo, roomrepo repository.RoomRepository, voucherRepo repository.VoucherRepo) TransService {
 	return &transService{
 		transRepo:  transRepo,
 		userRepo:   userRepo,
 		seekerRepo: seekerRepo,
 		roomRepo:   roomrepo,
+		voucherRepo: voucherRepo,
 	}
 }
