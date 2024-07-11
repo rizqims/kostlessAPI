@@ -21,6 +21,7 @@ type Server struct {
 	tS      service.TransService
 	sS      service.SeekerServ
 	uS      service.UserServ
+	vS      service.VoucherService
 	jS      util.JwtToken
 	aM      middleware.AuthMiddleware
 	engine  *gin.Engine
@@ -34,6 +35,7 @@ func (s *Server) initiateRoute() {
 	controller.NewTransController(routerGroup, s.tS).Route()
 	controller.NewSeekerContr(s.sS, routerGroup).Route()
 	controller.NewUserContr(s.uS, routerGroup).Route()
+	controller.NewVoucherController(s.vS, routerGroup).Route()
 }
 
 func (s *Server) Start() {
@@ -59,12 +61,14 @@ func NewServer() *Server {
 	transRepo := repository.NewTransRepo(db)
 	userRepo := repository.NewUserRepo(db)
 	seekerRepo := repository.NewUserSeeker(db)
+	voucherRepo := repository.NewVoucherRepo(db)
 	jwtUtil := util.NewJwtUtil(conf.JwtConfig)
 
 	kosService := service.NewKosService(kosRepo)
 	roomService := service.NewRoomService(roomRepo)
 	transService := service.NewTransService(transRepo, userRepo, seekerRepo, roomRepo)
 	userService := service.NewUserServ(userRepo, jwtUtil)
+	voucherService := service.NewVoucherService(voucherRepo)
 	seekerService := service.NewSeekerServ(seekerRepo, jwtUtil)
 
 	authMiddleware := middleware.NewAuthMiddleware(jwtUtil)
@@ -76,6 +80,7 @@ func NewServer() *Server {
 		tS:      transService,
 		sS:      seekerService,
 		uS:      userService,
+		vS:      voucherService,
 		jS:      jwtUtil,
 		aM:      authMiddleware,
 		engine:  gin.Default(),

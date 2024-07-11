@@ -194,6 +194,7 @@ func (t *transRepo) UpdatePaylater(payload dto.UpdatePaylaterReq) (model.Trans, 
 	}
 	return updatedTrans, nil
 }
+
 func NewTransRepo(db *sql.DB) TransRepo {
 	return &transRepo{
 		db: db,
