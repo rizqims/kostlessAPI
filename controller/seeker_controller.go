@@ -103,23 +103,6 @@ func (s *SeekerContr) DeleteSeeker(ctx *gin.Context) {
 	util.SendSingleResponse(ctx, http.StatusOK, "seekers deleted", id)
 }
 
-<<<<<<< HEAD
-func (s *SeekerContr) UpdateAttitudePoints(ctx *gin.Context) {
-	var request struct {
-		ID             string `json:"id"`
-		AttitudePoints int    `json:"attitudePoints"`
-	}
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		util.SendErrRes(ctx, http.StatusBadRequest, "failed not found")
-		return
-	}
-	if err := s.ser.UpdateAttitudePoints(request.ID, request.AttitudePoints); err != nil {
-		util.SendErrRes(ctx, http.StatusInternalServerError, "attitude failed updated")
-		return
-	}
-	util.SendSingleResponse(ctx, http.StatusOK, "seekers update attititude success", request)
-}
-
 // router
 func (s *SeekerContr) Route() {
 	router := s.rg.Group("/seekers")
