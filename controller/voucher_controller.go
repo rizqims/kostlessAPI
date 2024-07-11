@@ -27,11 +27,20 @@ func (v *VoucherController) CreateVoucherHandler(c *gin.Context){
 		return
 	}
 	util.SendSingleResponse(c, http.StatusCreated, "success creating voucher", response)
-
 }
+
+func (v *VoucherController) DeleteExpiredVoucherHandler(c *gin.Context){
+	err := v.service.DeleteExpiredVoucher()
+	if err != nil {
+		util.SendErrResponse(c, http.StatusInternalServerError, "delete voucher failed")
+	}
+
+	util.SendSingleResponse(c, http.StatusOK, "success delete expired voucher",0)
+} 
 func (t *VoucherController) Route() {
 	group := t.rg.Group("voucher")
 	group.POST("/create", t.CreateVoucherHandler)
+	group.DELETE("/", t.DeleteExpiredVoucherHandler)
 }
 
 func NewVoucherController(service service.VoucherService, rg *gin.RouterGroup) *VoucherController {
