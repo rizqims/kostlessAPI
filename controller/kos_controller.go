@@ -70,7 +70,7 @@ func (k *KosController) deleteKos(ctx *gin.Context) {
 		return
 	}
 
-	util.SendSingleResponse(ctx, http.StatusOK, "Success", nil)
+	util.SendSingleResponse(ctx, http.StatusOK, "Success delete", nil)
 }
 
 func (k *KosController) getKosByID(ctx *gin.Context) {
