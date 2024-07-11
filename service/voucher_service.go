@@ -1,9 +1,11 @@
 package service
 
 import (
+	"errors"
 	"kostless/model"
 	"kostless/model/dto"
 	"kostless/repository"
+	"time"
 )
 
 type VoucherService interface {
@@ -18,11 +20,14 @@ type voucherService struct {
 }
 
 func (v *voucherService) CreateVoucher(payload dto.CreateVoucherReq) (model.Voucher, error) {
+	expired, err := time.Parse(`2006-01-02`, payload.ExpiredDate)
+	if expired.Before(time.Now()){
+		return model.Voucher{}, errors.New("expired date should not be in the past")
+	}
 	voucher, err := v.repo.CreateVoucher(payload)
 	if err != nil {
 		return model.Voucher{}, err
 	}
-
 	return voucher, nil
 }
 

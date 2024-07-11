@@ -13,8 +13,8 @@ type TransCreateReq struct {
 
 type UpdatePaylaterReq struct {
 	SeekerID string `json:"seekerId"`
-	TransID string `json:"transId"`
-	Total   int    `json:"total"`
+	TransID  string `json:"transId"`
+	Total    int    `json:"total"`
 }
 
 type UpdatePaylaterRes struct {
@@ -23,6 +23,11 @@ type UpdatePaylaterRes struct {
 	DueDate          time.Time `json:"dueDate"`
 	CurrentTime      time.Time `json:"currentTime"`
 	TotalWithPenalty int       `json:"totalWithPenalty"`
+}
+
+type AccPayment struct {
+	TransID string `json:"transId"`
+	PaymentStatus string `json:"paymentStatus"`
 }
 
 // req json

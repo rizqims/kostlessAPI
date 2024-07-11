@@ -1,10 +1,8 @@
 package dto
 
-import "time"
-
 type CreateVoucherReq struct {
 	Name          string    `json:"name"`
-	ExpiredDate   time.Time `json:"expiredDate"`
+	ExpiredDate   string `json:"expiredDate"`
 	SeekerID      string    `json:"seekerId"`
 	PercentAmount int       `json:"percentAmount"`
 }

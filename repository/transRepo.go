@@ -15,6 +15,7 @@ type TransRepo interface {
 	GetPaylaterList() ([]model.Trans, error)
 	GetTransByMonth(startDate, endDate string) ([]model.Trans, error)
 	UpdatePaylater(payload dto.UpdatePaylaterReq) (model.Trans, error)
+	AccPayment(payload dto.AccPayment) (string, error)	
 }
 
 type transRepo struct {
@@ -186,11 +187,20 @@ func (t *transRepo) GetTransByMonth(startDate, endDate string) ([]model.Trans, e
 	return transList, nil
 }
 
-func (t *transRepo) UpdatePaylater(payload dto.UpdatePaylaterReq) (model.Trans, error){
+func (t *transRepo) UpdatePaylater(payload dto.UpdatePaylaterReq) (model.Trans, error) {
 	var updatedTrans model.Trans
 	err := t.db.QueryRow(`UPDATE bookings SET pay_later=false, updated_at=$1 WHERE id=$2 RETURNING due_date, total, seeker_id`, time.Now(), payload.TransID).Scan(&updatedTrans.DueDate, &updatedTrans.Total, &updatedTrans.SeekerID)
 	if err != nil {
 		return model.Trans{}, err
+	}
+	return updatedTrans, nil
+}
+
+func (t *transRepo) AccPayment(payload dto.AccPayment) (string, error){
+	var updatedTrans string
+	err := t.db.QueryRow(`UPDATE bookings SET pay_later=false, updated_at=$1, payment_status=$2 WHERE id=$3 RETURNING seeker_id`, time.Now(), payload.PaymentStatus, payload.TransID).Scan(&updatedTrans)
+	if err != nil {
+		return "", err
 	}
 	return updatedTrans, nil
 }
