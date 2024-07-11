@@ -63,6 +63,9 @@ func (t *transService) CreateTrans(payload dto.TransCreateReq) (model.Trans, err
 		trans.Total = totalPrice
 		fmt.Print("this get printed")
 	} else {
+		if payload.Months != 1{
+			return model.Trans{}, fmt.Errorf("error in checkMonth: cannot rent over than 1 month if using voucher")
+		}
 		voucher, err := t.voucherRepo.GetVoucherByID(payload.VoucherID)
 		if err != nil {
 			return model.Trans{}, fmt.Errorf("error in getvoucher: %v", err)
@@ -71,9 +74,7 @@ func (t *transService) CreateTrans(payload dto.TransCreateReq) (model.Trans, err
 		}
 
 		// pusing pala gwej
-		discount := (float32(voucher.PercentAmount)/100) * 100
-		discountedPrice := float32(room.Price)* discount
-		fmt.Println(discountedPrice)
+		discountedPrice := (float32(voucher.PercentAmount) / 100) * float32(totalPrice)
 		trans.Discount = voucher.PercentAmount
 		trans.Total = int(discountedPrice)
 	}
