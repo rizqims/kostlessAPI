@@ -33,8 +33,8 @@ func (r *kosRepository) CreateKos(kos model.Kos) (model.Kos, error) {
 }
 
 func (r *kosRepository) UpdateKos(kos model.Kos) (model.Kos, error) {
-	query := `UPDATE kos SET name = $1, address = $2, room_count = $3, coordinate = $4, description = $5, rules = $6, updated_at = $7 WHERE id = $8 RETURNING updated_at`
-	err := r.db.QueryRow(query, kos.Name, kos.Address, kos.RoomCount, kos.Coordinate, kos.Description, kos.Rules, time.Now(), kos.ID).Scan(&kos.UpdatedAt)
+	query := `UPDATE kos SET name = $1, address = $2, room_count = $3, coordinate = $4, description = $5, rules = $6, updated_at = $7 WHERE id = $8 RETURNING created_at, updated_at`
+	err := r.db.QueryRow(query, kos.Name, kos.Address, kos.RoomCount, kos.Coordinate, kos.Description, kos.Rules, time.Now(), kos.ID).Scan(&kos.CreatedAt, &kos.UpdatedAt)
 	if err != nil {
 		return model.Kos{}, err
 	}
