@@ -72,7 +72,7 @@ func (suite *SeekerServiceTestSuite) TestGetAllSeekers() {
 	assert.Nil(suite.T(), err)
 }
 
-func (suite *SeekerServiceTestSuite) TestGetSeekeryID() {
+func (suite *SeekerServiceTestSuite) TestGetSeekerByID() {
 	suite.repomock.On("GetSeekerByID", mockSeeker.Id).Return(mockSeeker, nil)
 
 	_, err := suite.sS.GetSeekerByID(mockSeeker.Id)
@@ -160,4 +160,45 @@ func (suite *SeekerServiceTestSuite) TestLogin_Success() {
 	_, err := suite.sS.Login(mockPayload)
 
 	assert.NoError(suite.T(), err)
+}
+
+func (suite *SeekerServiceTestSuite) TestCreatedNewSeeker_Success() {
+	mockSeeker := model.Seekers{
+		Fullname:     "Seeker 1",
+		Username:     "seeker1username",
+		Password:     "seeker1password",
+		Email:        "seeker@gmail.com",
+		PhoneNumber:  "08123456789",
+		PhotoProfile: "seeker1.jpg",
+	}
+
+	hashedPassword := "$2a$10$Wz.NhEDzUeW4YihltC91mOrHI0rQpskjI5uC4cO8OX6EpJdJ74ubG"
+
+	suite.hashmock.On("HashPassword", mockSeeker.Password).Return(hashedPassword, nil)
+	suite.repomock.On("CreatedNewSeeker", mockSeeker).Return(mockSeeker, nil)
+
+	createdSeeker, err := suite.sS.CreatedNewSeeker(mockSeeker)
+
+	assert.NoError(suite.T(), err)
+	assert.Equal(suite.T(), hashedPassword, createdSeeker.Password)
+	assert.NotEmpty(suite.T(), createdSeeker.Id)
+	assert.NotZero(suite.T(), createdSeeker.UpdatedAt)
+}
+
+func (suite *SeekerServiceTestSuite) TestCreatedNewSeeker_FailedHashPassword() {
+	mockSeeker := model.Seekers{
+		Fullname:     "Seeker 1",
+		Username:     "seeker1username",
+		Password:     "seeker1password",
+		Email:        "seeker@gmail.com",
+		PhoneNumber:  "08123456789",
+		PhotoProfile: "seeker1.jpg",
+	}
+
+	suite.hashmock.On("HashPassword", mockSeeker.Password).Return("", errors.New("failed to hash password"))
+
+	createdSeeker, err := suite.sS.CreatedNewSeeker(mockSeeker)
+
+	assert.Error(suite.T(), err)
+	assert.Empty(suite.T(), createdSeeker)
 }
