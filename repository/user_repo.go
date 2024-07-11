@@ -2,9 +2,7 @@ package repository
 
 import (
 	"database/sql"
-	//"errors"
 	"kostless/model"
-	//"kostless-api/util"
 	"time"
 )
 
@@ -52,7 +50,7 @@ func (u *userRepo) GetByUsername(username string) (model.User, error) {
 // CreatedNewUser implements UserRepo
 func (u *userRepo) CreatedNewUser(payload model.User) (model.User, error) {
 	var user model.User
-	err := u.db.QueryRow(`INSERT INTO users (fullname, username, password, email, phone_number, photo_profile, updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id, fullname, username, email, phone_number, photo_profile,created_at`, payload.Fullname, payload.Username, payload.Password, payload.Email, payload.PhoneNumber, payload.PhotoProfile, time.Now()).Scan(&user.Id, &user.Fullname, &user.Username, &user.Email, &user.PhoneNumber, &user.PhotoProfile, &user.CreatedAt)
+	err := u.db.QueryRow(`INSERT INTO users (fullname, username, password, email, phone_number, photo_profile, created_at, updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id, fullname, username, email, phone_number, photo_profile, created_at, updated_at`, payload.Fullname, payload.Username, payload.Password, payload.Email, payload.PhoneNumber, payload.PhotoProfile, time.Now(), time.Now()).Scan(&user.Id, &user.Fullname, &user.Username, &user.Email, &user.PhoneNumber, &user.PhotoProfile, &user.CreatedAt, &user.UpdatedAt)
 
 	if err != nil {
 		return model.User{}, err

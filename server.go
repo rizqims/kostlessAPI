@@ -27,7 +27,7 @@ type Server struct {
 func (s *Server) InitiateRoute(){
 	routerGroup := s.engine.Group("/api/v1")
 	controller.NewSeekerContr(s.sS, routerGroup, s.aM).Route()
-	controller.NewUserContr(s.uS, routerGroup, s.aM).Route()
+	controller.NewUserContr(s.uS, s.sS, routerGroup, s.aM).Route()
 }
 
 func (s *Server) Start(){
