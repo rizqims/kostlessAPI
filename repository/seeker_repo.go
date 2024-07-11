@@ -81,6 +81,15 @@ func (s *seekerRepo) GetBySeeker(username string) (model.Seekers, error) {
 	return seeker, nil
 }
 
+func (s *seekerRepo) GetByID(id string) (model.Seekers, error) {
+	var seeker model.Seekers
+	err := s.db.QueryRow(`SELECT id, username, password, fullname, email, phone_number, status, created_at, updated_at FROM seekers WHERE id=$1`, id).Scan(&seeker.Id, &seeker.Username, &seeker.Password, &seeker.Fullname, &seeker.Email, &seeker.Status, &seeker.CreatedAt, &seeker.UpdatedAt)
+	if err != nil {
+		return model.Seekers{}, err
+	}
+	return seeker, nil
+}
+
 // CreatedNewUser implements UserRepo.
 func (s *seekerRepo) CreatedNewSeeker(payload model.Seekers) (model.Seekers, error) {
 	var seeker model.Seekers

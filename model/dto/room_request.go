@@ -7,3 +7,11 @@ type RoomRequest struct {
 	Avail       string `json:"avail"`
 	Price       int    `json:"price"`
 }
+
+// {
+// 	"name":"",
+// 	"type":"",
+// 	"description":"",
+// 	"avail":"",
+// 	"price":""
+// }

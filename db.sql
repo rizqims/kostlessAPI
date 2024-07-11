@@ -71,7 +71,10 @@ CREATE TABLE IF NOT EXISTS bookings(
 CREATE TABLE IF NOT EXISTS vouchers(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(50),
+    expired_date DATE,
+    seeker_id UUID,
     percent_amount INT,
     created_at TIMESTAMP,
-    updated_at TIMESTAMP
+    updated_at TIMESTAMP,
+    FOREIGN KEY (seeker_id) REFERENCES seekers(id)
 );
