@@ -32,7 +32,7 @@ func (s *seekerRepo) DeleteSeeker(id string) error {
 // GetAllSeekers implements SeekerRepo.
 func (s *seekerRepo) GetAllSeekers() ([]model.Seekers, error) {
 	var seekers []model.Seekers
-	query := `SELECT id, fullname, username, password, email, phone_number,  attitude_points, status, photo_profile, room_id, created_at, updated_at FROM seekers`
+	query := `SELECT id, fullname, username, password, email, phone_number,  status, photo_profile, room_id, created_at, updated_at FROM seekers`
 	rows, err := s.db.Query(query)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (s *seekerRepo) GetAllSeekers() ([]model.Seekers, error) {
 // GetSeekerByID implements SeekerRepo.
 func (s *seekerRepo) GetSeekerByID(id string) (model.Seekers, error) {
 	var seeker model.Seekers
-	query := `SELECT id, fullname, username, password, email, phone_number, attitude_points, status, photo_profile, room_id, created_at, updated_at FROM seekers WHERE id=$1`
+	query := `SELECT id, fullname, username, password, email, phone_number, status, photo_profile, room_id, created_at, updated_at FROM seekers WHERE id=$1`
 	err := s.db.QueryRow(query, id).Scan(&seeker.Id, &seeker.Fullname, &seeker.Username, &seeker.Password, &seeker.Email, &seeker.PhoneNumber, &seeker.AtitudePoits, &seeker.Status, &seeker.PhotoProfile, &seeker.RoomId, &seeker.CreatedAt, &seeker.UpdatedAt)
 	return seeker, err
 }
@@ -74,7 +74,7 @@ func (s *seekerRepo) UpdateSeeker(id string, seeker model.Seekers) error {
 // GetBySeeker implements SeekerRepo.
 func (s *seekerRepo) GetBySeeker(username string) (model.Seekers, error) {
 	var seeker model.Seekers
-	err := s.db.QueryRow(`SELECT id, username, password, fullname, phone_number, attitude_points, status, photo_profile, created_at, updated_at FROM seekers WHERE username=$1`, username).Scan(&seeker.Id, &seeker.Username, &seeker.Password, &seeker.Fullname, &seeker.Email, &seeker.AtitudePoits, &seeker.Status, &seeker.PhotoProfile, &seeker.CreatedAt, &seeker.UpdatedAt)
+	err := s.db.QueryRow(`SELECT id, username, password, fullname, phone_number, status, photo_profile, created_at, updated_at FROM seekers WHERE username=$1`, username).Scan(&seeker.Id, &seeker.Username, &seeker.Password, &seeker.Fullname, &seeker.Email, &seeker.AtitudePoits, &seeker.Status, &seeker.PhotoProfile, &seeker.CreatedAt, &seeker.UpdatedAt)
 	if err != nil {
 		return model.Seekers{}, err
 	}
@@ -84,7 +84,7 @@ func (s *seekerRepo) GetBySeeker(username string) (model.Seekers, error) {
 // CreatedNewUser implements UserRepo.
 func (s *seekerRepo) CreatedNewSeeker(payload model.Seekers) (model.Seekers, error) {
 	var seeker model.Seekers
-	err := s.db.QueryRow(`INSERT INTO seekers (username, password, fullname, email, phone_number, attitude_points, status, photo_profile, updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id, username, fullname, email, phone_number, attitude_points, status, photo_profile, created_at`, payload.Username, payload.Password, payload.Fullname, payload.Email, payload.PhoneNumber, payload.AtitudePoits, payload.Status, payload.PhotoProfile, time.Now()).Scan(&seeker.Id, &seeker.Username, &seeker.Fullname, &seeker.Email, &seeker.PhoneNumber, &seeker.AtitudePoits, &seeker.Status, &seeker.PhotoProfile, &seeker.CreatedAt)
+	err := s.db.QueryRow(`INSERT INTO seekers (username, password, fullname, email, phone_number, status, photo_profile, updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id, username, fullname, email, phone_number, status, photo_profile, created_at`, payload.Username, payload.Password, payload.Fullname, payload.Email, payload.PhoneNumber, payload.Status, payload.PhotoProfile, time.Now()).Scan(&seeker.Id, &seeker.Username, &seeker.Fullname, &seeker.Email, &seeker.PhoneNumber, &seeker.Status, &seeker.PhotoProfile, &seeker.CreatedAt)
 
 	if err != nil {
 		return model.Seekers{}, err
