@@ -3,13 +3,7 @@ package repository
 import (
 	"database/sql"
 	"kostless/model"
-<<<<<<< HEAD
-	//"errors"
-	//"kostless-api/util"
-		"time"
-=======
 	"time"
->>>>>>> marcel
 )
 
 // interface

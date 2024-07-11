@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"kostless/middleware"
 	"kostless/model/dto"
 	"kostless/service"
 	"kostless/util"
@@ -12,18 +13,19 @@ import (
 type KosController struct {
 	service service.KosService
 	rg      *gin.RouterGroup
+	aM  middleware.AuthMiddleware
 }
 
-func NewKosController(service service.KosService, rg *gin.RouterGroup) *KosController {
-	return &KosController{service, rg}
+func NewKosController(service service.KosService, rg *gin.RouterGroup, aM  middleware.AuthMiddleware) *KosController {
+	return &KosController{service, rg, aM}
 }
 
 func (k *KosController) Route() {
 	group := k.rg.Group("/kos")
 	group.POST("/", k.createKos)
-	group.PUT("/:id", k.updateKos)
-	group.DELETE("/:id", k.deleteKos)
-	group.GET("/:id", k.getKosByID)
+	group.PUT("/:id", k.aM.CheckToken(), k.updateKos)
+	group.DELETE("/:id", k.aM.CheckToken(), k.deleteKos)
+	group.GET("/:id", k.aM.CheckToken(), k.getKosByID)
 }
 
 func (k *KosController) createKos(ctx *gin.Context) {

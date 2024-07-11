@@ -30,7 +30,7 @@ type Server struct {
 
 func (s *Server) initiateRoute() {
 	routerGroup := s.engine.Group("/api/v1")
-	controller.NewKosController(s.kS, routerGroup).Route()
+	controller.NewKosController(s.kS, routerGroup, s.aM).Route()
 	controller.NewRoomController(s.rS, routerGroup).Route()
 	controller.NewTransController(routerGroup, s.tS).Route()
 	controller.NewSeekerContr(s.sS, routerGroup, s.aM).Route()
