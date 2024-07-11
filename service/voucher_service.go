@@ -9,6 +9,8 @@ import (
 type VoucherService interface {
 	CreateVoucher(payload dto.CreateVoucherReq) (model.Voucher, error)
 	DeleteExpiredVoucher() error
+	GetAllVoucher() ([]model.Voucher, error)
+	GetVoucherBySeekerID(id string) ([]model.Voucher, error)
 }
 
 type voucherService struct {
@@ -31,6 +33,23 @@ func (v *voucherService) DeleteExpiredVoucher() error {
 	}
 	return nil
 }
+
+func (v *voucherService) GetAllVoucher() ([]model.Voucher, error){
+	voucherList, err := v.repo.GetAllVoucher()
+	if err != nil {
+		return nil, err
+	}
+	return voucherList, nil
+}
+
+func (v *voucherService) GetVoucherBySeekerID(id string) ([]model.Voucher, error){
+	voucherList, err := v.repo.GetVoucherBySeekerID(id)
+	if err != nil {
+		return nil, err
+	}
+	return voucherList, nil
+}
+
 
 func NewVoucherService(repo repository.VoucherRepo) VoucherService {
 	return &voucherService{
