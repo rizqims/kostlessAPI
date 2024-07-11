@@ -68,20 +68,29 @@ func (s *SeekerContr) GetAllSeekers(ctx *gin.Context) {
 		util.SendErrRes(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
+	for _, seeker := range seekers {
+		seeker.Password = ""
+	}
 	util.SendSingleResponse(ctx, http.StatusOK, "seekers found", seekers)
 }
 
 func (s *SeekerContr) UpdateProfile(ctx *gin.Context) {
-	var seeker model.Seekers
-	if err := ctx.ShouldBindJSON(&seeker); err != nil {
+	var updateSeeker model.Seekers
+	if err := ctx.ShouldBindJSON(&updateSeeker); err != nil {
 		util.SendErrRes(ctx, http.StatusBadRequest, "failed not found")
 		return
 	}
 	id := ctx.Param("id")
-	if err := s.ser.UpdateProfile(id, seeker); err != nil {
+	if err := s.ser.UpdateProfile(id, updateSeeker); err != nil {
 		util.SendErrRes(ctx, http.StatusInternalServerError, "seeker error")
 		return
 	}
+	seeker, err := s.ser.GetSeekerByID(id)
+	if err != nil {
+		util.SendErrRes(ctx, http.StatusInternalServerError, "updated error")
+		return
+	}
+
 	util.SendSingleResponse(ctx, http.StatusOK, "seekers updated", seeker)
 }
 
@@ -94,6 +103,7 @@ func (s *SeekerContr) DeleteSeeker(ctx *gin.Context) {
 	util.SendSingleResponse(ctx, http.StatusOK, "seekers deleted", id)
 }
 
+<<<<<<< HEAD
 func (s *SeekerContr) UpdateAttitudePoints(ctx *gin.Context) {
 	var request struct {
 		ID             string `json:"id"`
@@ -113,13 +123,15 @@ func (s *SeekerContr) UpdateAttitudePoints(ctx *gin.Context) {
 // router
 func (s *SeekerContr) Route() {
 	router := s.rg.Group("/seekers")
+	{
 	router.POST("/register", s.regisHandlerSeeker)
 	router.POST("/login", s.loginSeeker)
 	router.GET("/profile/:id", s.aM.CheckToken(), s.GetSeekerByID)
 	router.PUT("/profile/:id", s.aM.CheckToken(), s.UpdateProfile)
 	router.DELETE("/profile/:id", s.aM.CheckToken(), s.DeleteSeeker)
 	router.GET("/profile/getall", s.GetAllSeekers)
-	router.POST("/profile/update", s.UpdateAttitudePoints)
+	}
+
 }
 
 func NewSeekerContr(sS service.SeekerServ, rg *gin.RouterGroup, aM middleware.AuthMiddleware) *SeekerContr {

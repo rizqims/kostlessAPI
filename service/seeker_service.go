@@ -16,7 +16,7 @@ type SeekerServ interface {
 	CreatedNewSeeker(payload model.Seekers) (model.Seekers, error)
 	Login(payload dto.LoginDto) (dto.LoginResponse, error)
 	GetSeekerByID(id string) (model.Seekers, error)
-	GetAllSeekers() ([]model.Seekers, error)
+	GetAllSeekers() ([]*model.Seekers, error)
 	UpdateProfile(id string, updatedSeeker model.Seekers) error
 	DeleteSeeker(id string) error
 	UpdateAttitudePoints(id string, attitudePoints int) error
@@ -34,7 +34,7 @@ func (s *seekerServ) DeleteSeeker(id string) error {
 }
 
 // GetAllSeekers implements SeekerServ.
-func (s *seekerServ) GetAllSeekers() ([]model.Seekers, error) {
+func (s *seekerServ) GetAllSeekers() ([]*model.Seekers, error) {
 	return s.repo.GetAllSeekers()
 }
 
@@ -90,6 +90,7 @@ func (s *seekerServ) Login(payload dto.LoginDto) (dto.LoginResponse, error) {
 // register implement
 func (s *seekerServ) CreatedNewSeeker(payload model.Seekers) (model.Seekers, error) {
 	payload.Id = uuid.New().String()
+	payload.UpdatedAt = time.Now()
 	hash, error := util.HashPassword(payload.Password)
 	if error != nil {
 		return model.Seekers{}, error

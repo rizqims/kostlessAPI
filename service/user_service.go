@@ -60,6 +60,7 @@ func (u *userServ) Login(payload dto.LoginDto) (dto.LoginResponse, error) {
 // register implement
 func (u *userServ) CreatedNewUser(payload model.User) (model.User, error) {
 	payload.Id = uuid.New().String()
+	payload.UpdatedAt = time.Now()
 	hash, error := util.HashPassword(payload.Password)
 	if error != nil {
 		return model.User{}, error

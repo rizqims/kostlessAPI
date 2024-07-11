@@ -15,6 +15,7 @@ import (
 // struct
 type UserContr struct {
 	ser        service.UserServ
+	serS service.SeekerServ
 	rg         *gin.RouterGroup
 	middleware middleware.AuthMiddleware
 }
@@ -83,6 +84,23 @@ func (u *UserContr) updateUser(ctx *gin.Context) {
 	util.SendSingleResponse(ctx, http.StatusOK, "Success Updated", user)
 }
 
+func (u *UserContr) UpdateAttitudePoints(ctx *gin.Context) {
+	seekerID := ctx.Param("id")
+	var request struct {
+		AttitudePoints int    `json:"attitudePoints"`
+	}
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		util.SendErrRes(ctx, http.StatusBadRequest, "failed not found")
+		return
+	}
+	if err := u.serS.UpdateAttitudePoints(seekerID , request.AttitudePoints); err != nil {
+		util.SendErrRes(ctx, http.StatusInternalServerError, "attitude failed updated")
+		return
+	}
+	util.SendSingleResponse(ctx, http.StatusOK, "seekers update attititude success", request)
+
+}
+
 // router
 func (u *UserContr) Route() {
 	router := u.rg.Group("/users")
@@ -90,8 +108,9 @@ func (u *UserContr) Route() {
 	router.POST("/login", u.login)
 	router.GET("/profile/:id", u.middleware.CheckToken(), u.getUserId)
 	router.PUT("/profile/:id", u.middleware.CheckToken(), u.updateUser)
+	router.PUT("/seekers/attitude/:id", u.middleware.CheckToken(), u.UpdateAttitudePoints)
 }
 
-func NewUserContr(uS service.UserServ, rg *gin.RouterGroup, aM middleware.AuthMiddleware) *UserContr {
-	return &UserContr{ser: uS, rg: rg, middleware: aM}
+func NewUserContr(uS service.UserServ, sS service.SeekerServ, rg *gin.RouterGroup, aM middleware.AuthMiddleware) *UserContr {
+	return &UserContr{ser: uS, serS: sS, rg: rg, middleware: aM}
 }
