@@ -83,11 +83,13 @@ func (t *TransController) UpdatePaylaterHandler(c *gin.Context){
 	err := c.ShouldBindJSON(&payload)
 	if err != nil {
 		util.SendErrResponse(c, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	response, err := t.service.UpdatePaylater(payload)
 	if err != nil {
 		util.SendErrResponse(c, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	util.SendSingleResponse(c, http.StatusOK, "success update paylater", response)
