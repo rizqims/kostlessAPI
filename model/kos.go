@@ -14,4 +14,5 @@ type Kos struct {
 	Rules       string    `json:"rules"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+	Rooms       []Room    `json:"rooms"`
 }

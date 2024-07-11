@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS rooms(
     avail VARCHAR(15),
     price INT,
     created_at TIMESTAMP,
-    updated_at TIMESTAMP
+    updated_at TIMESTAMP,
+    kos_id UUID REFERENCES kos(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS seekers(

@@ -9,9 +9,12 @@ import (
 
 type RoomService interface {
 	CreateRoom(request dto.RoomRequest) (model.Room, error)
+	GetAllRooms() ([]model.Room, error)
 	GetRoomByID(id string) (model.Room, error)
 	GetRoomByAvailability(availability string) ([]model.Room, error)
 	GetRoomByPriceLowerThanOrEqual(budget string) ([]model.Room, error)
+	UpdateRoom(room model.Room) (model.Room, error)
+	DeleteRoom(id string) error
 }
 
 type roomService struct {
@@ -24,6 +27,7 @@ func NewRoomService(roomRepository repository.RoomRepository) *roomService {
 
 func (s *roomService) CreateRoom(request dto.RoomRequest) (model.Room, error) {
 	room := model.Room{
+		KosID:       request.KosID,
 		Name:        request.Name,
 		Type:        request.Type,
 		Description: request.Description,
@@ -31,6 +35,14 @@ func (s *roomService) CreateRoom(request dto.RoomRequest) (model.Room, error) {
 		Price:       request.Price,
 	}
 	return s.roomRepository.CreateRoom(room)
+}
+
+func (s *roomService) UpdateRoom(room model.Room) (model.Room, error) {
+	return s.roomRepository.UpdateRoom(room)
+}
+
+func (s *roomService) GetAllRooms() ([]model.Room, error) {
+	return s.roomRepository.GetAllRooms()
 }
 
 func (s *roomService) GetRoomByID(id string) (model.Room, error) {
@@ -47,4 +59,8 @@ func (s *roomService) GetRoomByPriceLowerThanOrEqual(budget string) ([]model.Roo
 		return nil, err
 	}
 	return s.roomRepository.GetRoomByPriceLowerThanOrEqual(price)
+}
+
+func (s *roomService) DeleteRoom(id string) error {
+	return s.roomRepository.DeleteRoom(id)
 }
