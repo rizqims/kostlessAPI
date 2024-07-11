@@ -82,7 +82,7 @@ func (s *seekerRepo) UpdateSeeker(id string, seeker model.Seekers) error {
 // GetBySeeker implements SeekerRepo.
 func (s *seekerRepo) GetBySeeker(username string) (model.Seekers, error) {
 	var seeker model.Seekers
-	err := s.db.QueryRow(`SELECT id, username, password, fullname, phone_number, status, photo_profile, created_at, updated_at FROM seekers WHERE username=$1`, username).Scan(&seeker.Id, &seeker.Username, &seeker.Password, &seeker.Fullname, &seeker.Email, &seeker.Status, &seeker.PhotoProfile, &seeker.CreatedAt, &seeker.UpdatedAt)
+	err := s.db.QueryRow(`SELECT id, username, password, fullname, email, phone_number, status, photo_profile, created_at, updated_at FROM seekers WHERE username=$1`, username).Scan(&seeker.Id, &seeker.Username, &seeker.Password, &seeker.Fullname, &seeker.Email, &seeker.PhoneNumber, &seeker.Status, &seeker.PhotoProfile, &seeker.CreatedAt, &seeker.UpdatedAt)
 	if err != nil {
 		return model.Seekers{}, err
 	}

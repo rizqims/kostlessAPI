@@ -126,10 +126,44 @@ func (suite *SeekerRepositoryTestSuite) TestUpdateSeeker_Success() {
 }
 
 func (suite *SeekerRepositoryTestSuite) TestGetBySeeker_Success() {
-	suite.mockSql.ExpectQuery("SELECT").WithArgs(mockingSeeker.Username).WillReturnRows(sqlmock.NewRows([]string{"id", "username", "password", "fullname", "phone_number", "status", "photo_profile", "created_at", "updated_at"}).AddRow(mockingSeeker.Id, mockingSeeker.Username, mockingSeeker.Password, mockingSeeker.Fullname, mockingSeeker.PhoneNumber, mockingSeeker.Status, mockingSeeker.PhotoProfile, mockingSeeker.CreatedAt, mockingSeeker.UpdatedAt))
+	suite.mockSql.ExpectQuery("SELECT").WithArgs(mockingSeeker.Username).WillReturnRows(sqlmock.NewRows([]string{"id", "username", "password", "fullname", "email", "phone_number", "status", "photo_profile", "created_at", "updated_at"}).AddRow(mockingSeeker.Id, mockingSeeker.Username, mockingSeeker.Password, mockingSeeker.Fullname, mockingSeeker.Email, mockingSeeker.PhoneNumber, mockingSeeker.Status, mockingSeeker.PhotoProfile, mockingSeeker.CreatedAt, mockingSeeker.UpdatedAt))
 
 	actual, err := suite.repo.GetBySeeker(mockingSeeker.Username)
 	assert.Nil(suite.T(), err)
 	assert.NoError(suite.T(), err)
 	assert.Equal(suite.T(), mockingSeeker, actual)
+}
+
+func (suite *SeekerRepositoryTestSuite) TestGetBySeeker_Failed() {
+	suite.mockSql.ExpectQuery("SELECT").WithArgs(mockingSeeker.Username).WillReturnError(errors.New("Get By Seeker Failed"))
+
+	_, err := suite.repo.GetBySeeker(mockingSeeker.Username)
+	assert.Error(suite.T(), err)
+}
+
+func (suite *SeekerRepositoryTestSuite) TestCreatedNewSeeker_Success() {
+	mockingSeekerCreate := model.Seekers{
+		Id:           "1",
+		Fullname:     "Seeker 1",
+		Username:     "seeker1",
+		Email:        "seeker@gmail.com",
+		PhoneNumber:  "08123456789",
+		PhotoProfile: "seeker1.jpg",
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+
+	suite.mockSql.ExpectQuery("INSERT INTO seekers").WithArgs(mockingSeeker.Username, mockingSeeker.Password, mockingSeeker.Fullname, mockingSeeker.Email, mockingSeeker.PhoneNumber, mockingSeeker.Status, mockingSeeker.PhotoProfile, time.Now(), time.Now()).WillReturnRows(sqlmock.NewRows([]string{"id", "username", "fullname", "email", "phone_number", "status", "photo_profile", "created_at", "updated_at"}).AddRow(mockingSeekerCreate.Id, mockingSeekerCreate.Username, mockingSeekerCreate.Fullname, mockingSeekerCreate.Email, mockingSeekerCreate.PhoneNumber, mockingSeekerCreate.Status, mockingSeekerCreate.PhotoProfile, time.Now(), time.Now()))
+
+	actual, err := suite.repo.CreatedNewSeeker(mockingSeeker)
+	assert.Nil(suite.T(), err)
+	assert.NoError(suite.T(), err)
+	assert.Equal(suite.T(), mockingSeekerCreate, actual)
+}
+
+func (suite *SeekerRepositoryTestSuite) TestCreatedNewSeeker_Failed() {
+	suite.mockSql.ExpectQuery("INSERT INTO seekers").WithArgs(mockingSeeker.Username, mockingSeeker.Password, mockingSeeker.Fullname, mockingSeeker.Email, mockingSeeker.PhoneNumber, mockingSeeker.Status, mockingSeeker.PhotoProfile, time.Now(), time.Now()).WillReturnError(errors.New("Created New Seeker Failed"))
+
+	_, err := suite.repo.CreatedNewSeeker(mockingSeeker)
+	assert.Error(suite.T(), err)
 }

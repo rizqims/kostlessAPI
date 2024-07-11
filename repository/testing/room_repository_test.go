@@ -50,7 +50,7 @@ func (suite *RoomRepositoryTestSuite) TestCreateRoom_Success() {
 	actual, err := suite.repo.CreateRoom(mockingRoom)
 	assert.Nil(suite.T(), err)
 	assert.NoError(suite.T(), err)
-	assert.Equal(suite.T(), mockingRoom.ID, actual.ID)
+	assert.Equal(suite.T(), mockingRoom, actual)
 }
 
 func (suite *RoomRepositoryTestSuite) TestCreateRoom_Failed() {

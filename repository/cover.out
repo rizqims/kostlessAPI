@@ -64,11 +64,11 @@ kostless/repository/seeker_repo.go:57.70,66.2 8 1
 kostless/repository/seeker_repo.go:69.80,73.2 3 1
 kostless/repository/seeker_repo.go:76.74,80.2 3 1
 kostless/repository/seeker_repo.go:83.74,86.16 3 1
-kostless/repository/seeker_repo.go:86.16,88.3 1 0
+kostless/repository/seeker_repo.go:86.16,88.3 1 1
 kostless/repository/seeker_repo.go:89.2,89.20 1 1
-kostless/repository/seeker_repo.go:93.85,97.16 3 0
-kostless/repository/seeker_repo.go:97.16,99.3 1 0
-kostless/repository/seeker_repo.go:100.2,100.20 1 0
+kostless/repository/seeker_repo.go:93.85,97.16 3 1
+kostless/repository/seeker_repo.go:97.16,99.3 1 1
+kostless/repository/seeker_repo.go:100.2,100.20 1 1
 kostless/repository/seeker_repo.go:103.49,105.2 1 1
 kostless/repository/transRepo.go:24.75,26.16 2 0
 kostless/repository/transRepo.go:26.16,28.3 1 0

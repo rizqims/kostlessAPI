@@ -64,7 +64,7 @@ func (suite *KostRepositoryTestSuite) TestCreateKos_Success() {
 	actual, err := suite.repo.CreateKos(mockingKos)
 	assert.Nil(suite.T(), err)
 	assert.NoError(suite.T(), err)
-	assert.Equal(suite.T(), mockingKos.ID, actual.ID)
+	assert.Equal(suite.T(), mockingKos, actual)
 }
 
 func (suite *KostRepositoryTestSuite) TestCreateKos_Failed() {
