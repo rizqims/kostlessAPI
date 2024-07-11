@@ -109,8 +109,8 @@ func (r *roomRepository) GetRoomByPriceLowerThanOrEqual(price int) ([]model.Room
 }
 
 func (r *roomRepository) UpdateRoom(room model.Room) (model.Room, error) {
-	query := `UPDATE rooms SET kos_id = $1, name = $2, type = $3, description = $4, avail = $5, price = $6, updated_at = $7 WHERE id = $8 RETURNING updated_at`
-	err := r.db.QueryRow(query, room.KosID, room.Name, room.Type, room.Description, room.Avail, room.Price, time.Now(), room.ID).Scan(&room.UpdatedAt)
+	query := `UPDATE rooms SET kos_id = $1, name = $2, type = $3, description = $4, avail = $5, price = $6, updated_at = $7 WHERE id = $8 RETURNING created_at, updated_at`
+	err := r.db.QueryRow(query, room.KosID, room.Name, room.Type, room.Description, room.Avail, room.Price, time.Now(), room.ID).Scan(&room.CreatedAt, &room.UpdatedAt)
 	if err != nil {
 		return model.Room{}, err
 	}
