@@ -133,5 +133,5 @@ func (r *RoomController) deleteRoom(ctx *gin.Context) {
 		return
 	}
 
-	util.SendSingleResponse(ctx, http.StatusOK, "Success", nil)
+	util.SendSingleResponse(ctx, http.StatusOK, "Success delete", nil)
 }
