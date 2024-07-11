@@ -89,7 +89,7 @@ func (u *UserContr) Route() {
 	router.POST("/register", u.regisHandler)
 	router.POST("/login", u.login)
 	router.GET("/profile/:id", u.middleware.CheckToken(), u.getUserId)
-	router.PUT("/profile/id", u.middleware.CheckToken(), u.updateUser)
+	router.PUT("/profile/:id", u.middleware.CheckToken(), u.updateUser)
 }
 
 func NewUserContr(uS service.UserServ, rg *gin.RouterGroup, aM middleware.AuthMiddleware) *UserContr {

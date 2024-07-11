@@ -8,3 +8,12 @@ type KosRequest struct {
 	Description string `json:"description"`
 	Rules       string `json:"rules"`
 }
+
+// {
+// 	"name":"",
+// 	"address":"",
+// 	"roomCount":"",
+// 	"coordinate":"",
+// 	"description":"",
+// 	"rules":""
+// }

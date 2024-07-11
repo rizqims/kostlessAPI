@@ -10,6 +10,7 @@ type RoomRequest struct {
 }
 
 // {
+// 	"kos_id":"",
 // 	"name":"",
 // 	"type":"",
 // 	"description":"",

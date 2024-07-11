@@ -65,7 +65,7 @@ func (s *SeekerContr) GetSeekerByID(ctx *gin.Context) {
 func (s *SeekerContr) GetAllSeekers(ctx *gin.Context) {
 	seekers, err := s.ser.GetAllSeekers()
 	if err != nil {
-		util.SendErrRes(ctx, http.StatusInternalServerError, "seeker not found")
+		util.SendErrRes(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 	util.SendSingleResponse(ctx, http.StatusOK, "seekers found", seekers)

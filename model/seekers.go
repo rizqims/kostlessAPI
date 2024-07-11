@@ -16,3 +16,20 @@ type Seekers struct {
 	CreatedAt    time.Time `json:"createdAt"`
 	UpdatedAt    time.Time `json:"updatedAt"`
 }
+
+// register
+// {
+// 	"username":"",
+// 	"password":"",
+// 	"fullname":"",
+// 	"email":"",
+// 	"phoneNumber":"",
+// 	"status":"",
+// 	"photoProfile":""
+// }
+
+// login
+// {
+// 	"username":"khalid",
+// 	"password":"123"
+//   }

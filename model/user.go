@@ -13,3 +13,19 @@ type User struct {
 	CreatedAt    time.Time `json:"createdAt"`
 	UpdatedAt    time.Time `json:"updatedAt"`
 }
+
+// register
+// {
+// 	"fullname":"",
+// 	"username":"",
+// 	"password":"",
+// 	"email":"",
+// 	"phoneNumber":"",
+// 	"photoProfile":""
+// }
+
+// login
+// {
+// 	"username":"",
+// 	"password":""
+// }
