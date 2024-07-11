@@ -13,6 +13,7 @@ type VoucherService interface {
 	DeleteExpiredVoucher() error
 	GetAllVoucher() ([]model.Voucher, error)
 	GetVoucherBySeekerID(id string) ([]model.Voucher, error)
+	GetVoucherByID(id string)(model.Voucher, error)
 }
 
 type voucherService struct {
@@ -51,6 +52,14 @@ func (v *voucherService) GetVoucherBySeekerID(id string) ([]model.Voucher, error
 	voucherList, err := v.repo.GetVoucherBySeekerID(id)
 	if err != nil {
 		return nil, err
+	}
+	return voucherList, nil
+}
+
+func (v *voucherService) GetVoucherByID(id string)(model.Voucher, error){
+	voucherList, err := v.repo.GetVoucherByID(id)
+	if err != nil {
+		return model.Voucher{}, err
 	}
 	return voucherList, nil
 }

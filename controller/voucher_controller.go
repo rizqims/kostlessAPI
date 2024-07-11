@@ -50,7 +50,7 @@ func (v *VoucherController) GetAllVoucherHandler(c *gin.Context) {
 }
 
 func (v *VoucherController) GetVoucherBySeekerIDHandler(c *gin.Context){
-	id := c.Param("id")
+	id := c.Param("seeker_id")
 	response, err := v.service.GetVoucherBySeekerID(id)
 	if err != nil {
 		util.SendErrResponse(c, http.StatusInternalServerError, err.Error())
@@ -58,12 +58,23 @@ func (v *VoucherController) GetVoucherBySeekerIDHandler(c *gin.Context){
 	}
 	util.SendSingleResponse(c, http.StatusOK, "success get all voucher", response)
 }
+
+func (v *VoucherController) GetVoucherByIDHandler(c *gin.Context){
+	id := c.Param("id")
+	response, err := v.service.GetVoucherByID(id)
+	if err != nil {
+		util.SendErrResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	util.SendSingleResponse(c, http.StatusOK, "success get a voucher", response)
+}
 func (t *VoucherController) Route() {
 	group := t.rg.Group("voucher")
 	group.POST("/create", t.CreateVoucherHandler) //
 	group.DELETE("/", t.DeleteExpiredVoucherHandler) //
 	group.GET("/", t.GetAllVoucherHandler) //
-	group.GET("/:id", t.GetVoucherBySeekerIDHandler) //
+	group.GET("/seeker/:seeker_id", t.GetVoucherBySeekerIDHandler) //
+	group.GET("/:id", t.GetVoucherByIDHandler)
 }
 
 func NewVoucherController(service service.VoucherService, rg *gin.RouterGroup) *VoucherController {

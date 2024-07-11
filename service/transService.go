@@ -26,25 +26,26 @@ type transService struct {
 	userRepo   repository.UserRepo
 	seekerRepo repository.SeekerRepo
 	roomRepo   repository.RoomRepository
+	voucherRepo repository.VoucherRepo
 }
 
 func (t *transService) CreateTrans(payload dto.TransCreateReq) (model.Trans, error) {
 	var trans model.Trans
 	seeker, err := t.seekerRepo.GetSeekerByID(payload.SeekerID)
 	if err != nil {
-		return model.Trans{}, err
+		return model.Trans{}, fmt.Errorf("error in GetSeekerByID: %v", err)
 	}
 
 	startDate, err := time.Parse(`2006-01-02`, payload.StartDate)
 	if err != nil {
-		return model.Trans{}, err
+		return model.Trans{}, fmt.Errorf("error in time.Parse: %v", err)
 	}
 	trans.EndDate = startDate.AddDate(0, payload.Months, 0)
 
 	// implement total logic
 	room, err := t.roomRepo.GetRoomByID(payload.RoomID)
 	if err != nil {
-		return model.Trans{}, err
+		return model.Trans{}, fmt.Errorf("error in GetRoomByID: %v", err)
 	}
 
 	totalPrice := room.Price * payload.Months
@@ -54,6 +55,27 @@ func (t *transService) CreateTrans(payload dto.TransCreateReq) (model.Trans, err
 		return model.Trans{}, errors.New("endDate should not before StartDate")
 	} else if startDate.Before(time.Now()){
 		return model.Trans{}, errors.New("startDate should be in the future")
+	}
+
+	//validate voucher
+	if payload.VoucherID == ""{
+		trans.Discount = 0
+		trans.Total = totalPrice
+		fmt.Print("this get printed")
+	} else {
+		voucher, err := t.voucherRepo.GetVoucherByID(payload.VoucherID)
+		if err != nil {
+			return model.Trans{}, fmt.Errorf("error in getvoucher: %v", err)
+		} else if voucher.SeekerID != payload.SeekerID{
+			return model.Trans{}, fmt.Errorf("error in seekermatch : %v", err)
+		}
+
+		// pusing pala gwej
+		discount := (float32(voucher.PercentAmount)/100) * 100
+		discountedPrice := float32(room.Price)* discount
+		fmt.Println(discountedPrice)
+		trans.Discount = voucher.PercentAmount
+		trans.Total = int(discountedPrice)
 	}
 
 	// validate paylater
@@ -76,12 +98,11 @@ func (t *transService) CreateTrans(payload dto.TransCreateReq) (model.Trans, err
 	trans.RoomID = payload.RoomID
 	trans.SeekerID = payload.SeekerID
 	trans.StartDate = startDate
-	trans.Total = totalPrice
 	trans.PayLater = payload.PayLater
 
 	transReq, err := t.transRepo.CreateTrans(trans)
 	if err != nil {
-		return model.Trans{}, err
+		return model.Trans{}, fmt.Errorf("createtransrepo error: %v", err)
 	}
 
 	// TODO use detailed message
@@ -252,11 +273,12 @@ func notifyTransToUsers(to, subject, desc, link string) error {
 	return nil
 }
 
-func NewTransService(transRepo repository.TransRepo, userRepo repository.UserRepo, seekerRepo repository.SeekerRepo, roomrepo repository.RoomRepository) TransService {
+func NewTransService(transRepo repository.TransRepo, userRepo repository.UserRepo, seekerRepo repository.SeekerRepo, roomrepo repository.RoomRepository, voucherRepo repository.VoucherRepo) TransService {
 	return &transService{
 		transRepo:  transRepo,
 		userRepo:   userRepo,
 		seekerRepo: seekerRepo,
 		roomRepo:   roomrepo,
+		voucherRepo: voucherRepo,
 	}
 }

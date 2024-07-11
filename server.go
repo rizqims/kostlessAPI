@@ -66,7 +66,7 @@ func NewServer() *Server {
 
 	kosService := service.NewKosService(kosRepo)
 	roomService := service.NewRoomService(roomRepo)
-	transService := service.NewTransService(transRepo, userRepo, seekerRepo, roomRepo)
+	transService := service.NewTransService(transRepo, userRepo, seekerRepo, roomRepo, voucherRepo)
 	userService := service.NewUserServ(userRepo, jwtUtil)
 	voucherService := service.NewVoucherService(voucherRepo)
 	seekerService := service.NewSeekerServ(seekerRepo, jwtUtil)

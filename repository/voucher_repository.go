@@ -12,6 +12,7 @@ type VoucherRepo interface {
 	DeleteExpiredVoucher() error
 	GetAllVoucher() ([]model.Voucher, error)
 	GetVoucherBySeekerID(id string) ([]model.Voucher, error)
+	GetVoucherByID(id string)(model.Voucher, error)
 }
 
 type voucherRepo struct {
@@ -112,6 +113,23 @@ func (v *voucherRepo) GetVoucherBySeekerID(id string) ([]model.Voucher, error){
 		voucherList = append(voucherList, voucher)
 	}
 	return voucherList, nil
+}
+
+func (v *voucherRepo) GetVoucherByID(id string)(model.Voucher, error){
+	var voucher model.Voucher
+	err := v.db.QueryRow(`SELECT * FROM vouchers WHERE id=$1`, id).Scan(
+		&voucher.ID,
+		&voucher.Name,
+		&voucher.ExpiredDate,
+		&voucher.SeekerID,
+		&voucher.PercentAmount,
+		&voucher.CreatedAt,
+		&voucher.UpdatedAt,
+	)
+	if err != nil {
+		return model.Voucher{}, err
+	}
+	return voucher, nil
 }
 
 func NewVoucherRepo(db *sql.DB) VoucherRepo {
