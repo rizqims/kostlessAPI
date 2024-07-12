@@ -1,4 +1,4 @@
-package mocks
+package middlemock
 
 import (
 	"github.com/gin-gonic/gin"

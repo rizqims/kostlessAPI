@@ -1,4 +1,4 @@
-package mocks
+package repomock
 
 import (
 	"kostless/model"

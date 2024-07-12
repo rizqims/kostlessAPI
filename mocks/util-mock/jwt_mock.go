@@ -1,4 +1,4 @@
-package mocks
+package utilmock
 
 import (
 	"kostless/model/dto"
